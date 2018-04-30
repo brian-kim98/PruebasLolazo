@@ -14,7 +14,7 @@ type Nombre = String
 
 type Transaccion = Usuario -> Evento -> Usuario -> Evento
 
-type Transferencias = Usuario -> Usuario -> Usuario -> Evento
+type Transferencias = Usuario -> Usuario -> Dinero -> Usuario -> Evento
 
 data Usuario = Usuario {
 nombre :: Nombre,
@@ -76,8 +76,8 @@ testUsuarios = hspec $ do
 
 
 generadorTransacciones :: Transaccion
-generadorTransacciones unaPersona unEvento otraPersona | nombre unaPersona == nombre otraPersona = unEvento
-                                                       | otherwise = quedaIgual
+generadorTransacciones unaPersona unEvento personaAplicada | nombre unaPersona == nombre personaAplicada = unEvento
+                                                           | otherwise = quedaIgual
 
 pepe2 = Usuario {
 nombre = "Jose",
@@ -95,29 +95,38 @@ testTransacciones = hspec $ do
 
 
 generadorTransferencias :: Transferencias
-generadorTransferencias usuarioDeudor usuarioAcreedor usuarioAplicado | nombre usuarioDeudor == nombre usuarioAplicado = (extraccion 7)
-                                                                      | nombre usuarioAcreedor == nombre usuarioAplicado = (deposito 7)
-                                                                      | otherwise = quedaIgual
+generadorTransferencias usuarioDeudor usuarioAcreedor unaCantidad usuarioAplicado | nombre usuarioDeudor == nombre usuarioAplicado = (extraccion unaCantidad)
+                                                                                  | nombre usuarioAcreedor == nombre usuarioAplicado = (deposito unaCantidad)
+                                                                                  | otherwise = quedaIgual
 
 
 testTransferencias = hspec $ do
   describe "Transacciones mas complejas " $ do
-    it "Aplicamos la transaccion 'pepe le da 7 unidades a lucho' con Pepe, esto lo aplicamos a una billetera de 10 monedas, y termina con 3 monedas " $ (generadorTransferencias pepe lucho pepe 10)`shouldBe` 3
-    it "Aplicamos la transaccion 'pepe le da 7 unidades a lucho' con Lucho, esto lo aplicamos a una billetera de 10 monedas, termina con 17 monedas " $ (generadorTransferencias pepe lucho lucho 10) `shouldBe` 17
+    it "Aplicamos la transaccion 'pepe le da 7 unidades a lucho' con Pepe, esto lo aplicamos a una billetera de 10 monedas, y termina con 3 monedas " $ (generadorTransferencias pepe lucho 7 pepe 10)`shouldBe` 3
+    it "Aplicamos la transaccion 'pepe le da 7 unidades a lucho' con Lucho, esto lo aplicamos a una billetera de 10 monedas, termina con 17 monedas " $ (generadorTransferencias pepe lucho 7 lucho 10) `shouldBe` 17
 
 --------------------------------------------------------------------
  -- 2da Parte --
 testUsuarioTransaccion = hspec $ do
   describe "Usuario luego de transacción" $ do
     it "Se realiza la transacción 'Lucho cierra la cuenta' en Pepe directamente (Pepe cuenta con una billetera de 10 monedas) = 10 monedas" $ (generadorTransacciones lucho cierreDeCuenta pepe (billetera pepe)) `shouldBe` 10
-    it "Aplicamos la transaccion 'pepe le da 7 unidades a lucho' a Lucho directamente (Lucho cuenta con una billetera de 2 monedas) = 9 monedas" $ (generadorTransferencias pepe lucho lucho (billetera lucho)) `shouldBe` 9
-    it "Aplicamos la transaccion 'pepe le da 7 unidades a lucho' y luego 'pepe deposita 5 monedas' a Pepe (Pepe cuenta con una billetera de 10 monedas) = 8" $ ((generadorTransacciones pepe (deposito 5) pepe) . (generadorTransferencias pepe lucho pepe)) (billetera pepe) `shouldBe` 8
+    it "Aplicamos la transaccion 'pepe le da 7 unidades a lucho' a Lucho directamente (Lucho cuenta con una billetera de 2 monedas) = 9 monedas" $ (generadorTransferencias pepe lucho 7 lucho (billetera lucho)) `shouldBe` 9
+    it "Aplicamos la transaccion 'pepe le da 7 unidades a lucho' y luego 'pepe deposita 5 monedas' a Pepe (Pepe cuenta con una billetera de 10 monedas) = 8" $ ((generadorTransacciones pepe (deposito 5) pepe) . (generadorTransferencias pepe lucho 7 pepe)) (billetera pepe) `shouldBe` 8
+
+billeteraLuegoDeTransaccion :: Usuario -> Evento -> Usuario -> Usuario
+billeteraLuegoDeTransaccion unaPersona unEvento personaAplicada = personaAplicada {
+  billetera = (generadorTransacciones unaPersona unEvento personaAplicada) (billetera personaAplicada)
+}
+billeteraLuegoDeTransferencia :: Usuario -> Usuario -> Dinero -> Usuario -> Usuario
+billeteraLuegoDeTransferencia usuarioDeudor usuarioAcreedor unaCantidad usuarioAplicado = usuarioAplicado {
+  billetera = generadorTransferencias usuarioDeudor usuarioAcreedor unaCantidad usuarioAplicado  (billetera usuarioAplicado)
+}
 
 --------------------------------------------------------------------
 
 primerBloque :: Usuario -> Usuario
 primerBloque unUsuario = unUsuario {
-  billetera = ((generadorTransacciones lucho tocoYMeVoy unUsuario) . (generadorTransferencias pepe lucho unUsuario) . (generadorTransacciones lucho ahorranteErrante unUsuario) . (generadorTransacciones lucho tocoYMeVoy unUsuario) . (generadorTransacciones pepe (deposito 5) unUsuario) . (generadorTransacciones pepe (deposito 5) unUsuario) . (generadorTransacciones pepe (deposito 5) unUsuario) . (generadorTransacciones lucho cierreDeCuenta unUsuario)) (billetera unUsuario)
+  billetera = ((generadorTransacciones lucho tocoYMeVoy unUsuario) . (generadorTransferencias pepe lucho 7 unUsuario) . (generadorTransacciones lucho ahorranteErrante unUsuario) . (generadorTransacciones lucho tocoYMeVoy unUsuario) . (generadorTransacciones pepe (deposito 5) unUsuario) . (generadorTransacciones pepe (deposito 5) unUsuario) . (generadorTransacciones pepe (deposito 5) unUsuario) . (generadorTransacciones lucho cierreDeCuenta unUsuario)) (billetera unUsuario)
 }
 
 testBloques = hspec $ do
