@@ -139,7 +139,7 @@ billeteraLuegoDeTransferencia usuarioDeudor usuarioAcreedor unaCantidad usuarioA
 type Bloque = Usuario -> Usuario
 
 -- Creamos las transacciones para que sea menos tedioso --
-luuchoCierraLaCuenta :: Usuario -> Evento
+luchoCierraLaCuenta :: Usuario -> Evento
 luchoCierraLaCuenta = generadorTransacciones lucho cierreDeCuenta
 
 pepeDeposita5monedas :: Usuario -> Evento
@@ -158,7 +158,7 @@ pepeDa7ALucho = generadorTransferencias pepe lucho 7
 
 primerBloque :: Bloque
 primerBloque unUsuario = unUsuario {
-  billetera = ((luchoTocaYSeVa unUsuario) . (pepeDa7ALucho unUsuario) . (luchoAhorranteErrante unUsuario) . (luchoTocaYSeVa unUsuario) . (pepeDeposita5monedas unUsuario) . (pepeDeposita5monedas unUsuario) . (pepeDa7ALucho unUsuario) . (luchoCierraLaCuenta unUsuario)) (billetera unUsuario)
+  billetera = ((luchoCierraLaCuenta unUsuario) . (pepeDeposita5monedas unUsuario) . (pepeDeposita5monedas unUsuario) . (pepeDeposita5monedas unUsuario) . (luchoTocaYSeVa unUsuario) . (luchoAhorranteErrante unUsuario) . (pepeDa7ALucho unUsuario) . (luchoTocaYSeVa unUsuario)) (billetera unUsuario)
 }
 
 
@@ -187,7 +187,7 @@ testBloques = hspec $ do
 
 segundoBloque :: Bloque
 segundoBloque unUsuario = unUsuario {
-  billetera = ((generadorTransacciones pepe (deposito 5) unUsuario) . (generadorTransacciones pepe (deposito 5) unUsuario) . (generadorTransacciones pepe (deposito 5) unUsuario) . (generadorTransacciones pepe (deposito 5) unUsuario) . (generadorTransacciones pepe (deposito 5) unUsuario)) (billetera unUsuario)
+  billetera = ((pepeDeposita5monedas unUsuario) . (pepeDeposita5monedas unUsuario) . (pepeDeposita5monedas unUsuario) . (pepeDeposita5monedas unUsuario) . (pepeDeposita5monedas unUsuario)) (billetera unUsuario)
 }
 
 type BlockChain = [Bloque]
