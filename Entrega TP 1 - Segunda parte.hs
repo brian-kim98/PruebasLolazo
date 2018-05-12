@@ -138,16 +138,34 @@ billeteraLuegoDeTransferencia usuarioDeudor usuarioAcreedor unaCantidad usuarioA
 
 type Bloque = Usuario -> Usuario
 
+-- Creamos las transacciones para que sea menos tedioso --
+luuchoCierraLaCuenta :: Usuario -> Evento
+luchoCierraLaCuenta = generadorTransacciones lucho cierreDeCuenta
+
+pepeDeposita5monedas :: Usuario -> Evento
+pepeDeposita5monedas = generadorTransacciones pepe (deposito 5)
+
+luchoTocaYSeVa :: Usuario -> Evento
+luchoTocaYSeVa = generadorTransacciones lucho tocoYMeVoy
+
+luchoAhorranteErrante :: Usuario -> Evento
+luchoAhorranteErrante = generadorTransacciones lucho ahorranteErrante
+
+pepeDa7ALucho :: Usuario -> Evento
+pepeDa7ALucho = generadorTransferencias pepe lucho 7
+
+
+
 primerBloque :: Bloque
 primerBloque unUsuario = unUsuario {
-  billetera = ((generadorTransacciones lucho tocoYMeVoy unUsuario) . (generadorTransferencias pepe lucho 7 unUsuario) . (generadorTransacciones lucho ahorranteErrante unUsuario) . (generadorTransacciones lucho tocoYMeVoy unUsuario) . (generadorTransacciones pepe (deposito 5) unUsuario) . (generadorTransacciones pepe (deposito 5) unUsuario) . (generadorTransacciones pepe (deposito 5) unUsuario) . (generadorTransacciones lucho cierreDeCuenta unUsuario)) (billetera unUsuario)
+  billetera = ((luchoTocaYSeVa unUsuario) . (pepeDa7ALucho unUsuario) . (luchoAhorranteErrante unUsuario) . (luchoTocaYSeVa unUsuario) . (pepeDeposita5monedas unUsuario) . (pepeDeposita5monedas unUsuario) . (pepeDa7ALucho unUsuario) . (luchoCierraLaCuenta unUsuario)) (billetera unUsuario)
 }
 
 
 saldoDeAlMenosNCreditos n bloque unaListaDeUsuarios = filter ((> n) . billetera . bloque) unaListaDeUsuarios
 
 
-elMasAdinerado unBlque (cabezaUsuario : []) = cabezaUsuario
+elMasAdinerado unBloque (cabezaUsuario : []) = cabezaUsuario
 elMasAdinerado unBloque (cabezaUsuario : (cabezaColaUsuarios:colaColaUsuarios)) | billetera (unBloque cabezaUsuario) >= billetera (unBloque cabezaColaUsuarios) = elMasAdinerado unBloque (cabezaUsuario : colaColaUsuarios)
                                                                                 | otherwise = elMasAdinerado unBloque (cabezaColaUsuarios : colaColaUsuarios)
 
