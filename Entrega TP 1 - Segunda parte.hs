@@ -196,7 +196,7 @@ listaBlockChain = [segundoBloque, primerBloque, primerBloque , primerBloque , pr
 
 blockChain :: BlockChain -> Usuario -> Usuario
 blockChain  [] unUsuario = unUsuario
-blockChain  (cabezaBloque : colaBloque) unUsuario = blockChain   colaBloque (cabezaBloque unUsuario)
+blockChain  (cabezaBloque : colaBloque) unUsuario = blockChain colaBloque (cabezaBloque unUsuario)
 
 elPeorBloque unUsuario [unaCosa] =  unaCosa
 elPeorBloque unUsuario (cabezaBloque : medioBloque :colaBloque) | billetera (cabezaBloque unUsuario) >= billetera (medioBloque unUsuario) = elPeorBloque unUsuario (medioBloque:colaBloque)
