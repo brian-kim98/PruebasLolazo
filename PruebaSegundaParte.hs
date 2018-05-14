@@ -229,14 +229,15 @@ saldoLuegoDeNBloques cantidadDeBloques unUsuario listaDeBloques = blockChain (ta
 
 --BLOCKCHAIN INFINITO--
 
----chainInfinity bloque =  bloque : (chainInfinity (bloque.bloque))--
+chainInfinity bloque =  bloque : (chainInfinity (bloque.bloque))
 
--- chainInfinity usuario bloque =  bloque usuario  : (chainInfinity usuario (bloque.bloque)) --
+--Este NO--
+--chainInfinity usuario bloque =  bloque usuario  : (chainInfinity (bloque usuario) (bloque.bloque))--
+
+listaCuantosNecesarios numero usuario (cabeza : cola) | billetera (cabeza usuario) >= numero = [cabeza]
+                                                      | billetera (cabeza usuario) < numero = (cabeza : listaCuantosNecesarios numero (cabeza usuario) cola)
 
 
---cuantosInfinitos contador numero usuario bloque  | billetera (foldr ($) usuario (take contador (chainInfinity bloque))) < numero = cuantosInfinitos (contador + 1) numero usuario bloque--
-                                              --  | otherwise = contador--
-
---testeBlockChainInfinito = hspec $ do--
---  describe "Testeo de BlockChain Infinito" $ do--
-    --it "" $ (lenght (filter (<10000 . billetera) (chainInfinity pepe primerBloque) )) + 1 `shouldBe` 11--
+testeBlockChainInfinito = hspec $ do
+  describe "Testeo de BlockChain Infinito" $ do
+    it "Cuantos elementos de  una BlockChain infinita creada a partir del bloque 1 deben usarse para que Pepe llegue a tener 10000 créditos, deberian ser 11 para llegar a 16386" $ length (listaCuantosNecesarios 10000 pepe (chainInfinity primerBloque))  `shouldBe` 11
