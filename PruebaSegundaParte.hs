@@ -157,7 +157,6 @@ testBloques = hspec $ do
     it "Determinar el mas adinerado con el primer bloque en una lista con lucho y pepe, deberia ser pepe. " $ elMasAdinerado primerBloque [lucho,pepe] `shouldBe` pepe
     it "Determinar el menos adinerado con el primer bloque en una lista con lucho y pepe, deberia ser lucho. " $ elMenosAdinerado primerBloque [lucho,pepe] `shouldBe` lucho
 
-
 bloque1 = [luchoTocaYSeVa, pepeDa7ALucho, luchoAhorranteErrante, luchoTocaYSeVa, pepeDeposita5monedas, pepeDeposita5monedas, pepeDeposita5monedas, luchoCierraLaCuenta]
 
 type Bloque = Usuario -> Usuario
@@ -188,6 +187,14 @@ elMenosAdinerado unBloque (cabezaUsuario : (cabezaColaUsuarios:colaColaUsuarios)
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- BLOCK CHAIN --
 
+
+testBlockChain = hspec $ do
+  describe "Testeo de BlockChains " $ do
+    it "El peor bloque con el cual podria empezar pepe de una cadena de 1 segundo bloque y 10 primer bloque, deberia ser cualquiera de los primer bloque, ya que empezaria con 18 monedas" $ billetera (elPeorBloque pepe listaBlockChain pepe) `shouldBe` 18
+    it "Aplicar un BlockChain compuesta del segundoBloque, seguido del primerBloque 10 veces a pepe, esto deberia dar una billetera de 115" $ foldr ($) pepe listaBlockChain `shouldBe` Usuario {nombre = "Jose", billetera = 115.0}
+    it "Probar tomando solo los primeros 3 bloques de una cadena de 1 segundo bloque y 10 primer bloque, aplicados a pepe, esto deberia dar un pepe con 51 monedas" $ saldoLuegoDeNBloques 3 pepe listaBlockChain `shouldBe`  Usuario {nombre = "Jose", billetera = 51.0}
+    it "Aplicar la BlockChain de 1 segundo bloque seguido de 10 segundo bloques, a una lista que contenga a pepe y lucho, esto deberia devolvernos una lista de pepe con 115 monedas y un lucho con 0 monedas" $  map (blockChain listaBlockChain) [pepe,lucho] `shouldBe` [Usuario {nombre = "Jose", billetera = 115.0},Usuario {nombre = "Luciano", billetera = 0.0}]
+
 bloque2 = [pepeDeposita5monedas, pepeDeposita5monedas, pepeDeposita5monedas, pepeDeposita5monedas ,pepeDeposita5monedas]
 
 segundoBloque :: Bloque
@@ -196,33 +203,37 @@ segundoBloque unUsuario = unUsuario {
 }
 
 type BlockChain = [Bloque]
-listaBlockChain = [segundoBloque, primerBloque, primerBloque , primerBloque , primerBloque , primerBloque , primerBloque , primerBloque , primerBloque , primerBloque , primerBloque ]
+
+listaBlockChain = [segundoBloque, primerBloque, primerBloque , primerBloque , primerBloque , primerBloque , primerBloque , primerBloque , primerBloque , primerBloque, primerBloque]
 
 blockChain :: BlockChain -> Usuario -> Usuario
-blockChain  [] unUsuario = unUsuario
-blockChain  (cabezaBloque : colaBloque) unUsuario = blockChain colaBloque (cabezaBloque unUsuario)
+blockChain unaListaDeBloques unUsuario = foldr ($) unUsuario unaListaDeBloques
 
+elPeorBloque :: Usuario -> [Bloque] -> Bloque
 elPeorBloque unUsuario [unBloque] =  unBloque
 elPeorBloque unUsuario (cabezaBloque : medioBloque :colaBloque) | elPeorBloqueEsElSegundo cabezaBloque medioBloque unUsuario = elPeorBloque unUsuario (medioBloque:colaBloque)
                                                                 | otherwise = elPeorBloque unUsuario (cabezaBloque:colaBloque)
+-- auxiliar --
 elPeorBloqueEsElSegundo :: Bloque -> Bloque -> Usuario -> Bool
 elPeorBloqueEsElSegundo unBloque otroBloque unUsuario = billetera (unBloque unUsuario) >= billetera (otroBloque unUsuario)
+--------------
 
 saldoLuegoDeNBloques :: Int -> Usuario -> [Bloque] -> Usuario
-saldoLuegoDeNBloques n unUsuario (cabezaBloque : colaBloque) | n == 0 = unUsuario
-                                                             | n > length colaBloque = blockChain (cabezaBloque : colaBloque) unUsuario
-                                                             | n > 0 = saldoLuegoDeNBloques (blockChain [cabezaBloque] unUsuario) (n-1) colaBloque
+saldoLuegoDeNBloques cantidadDeBloques unUsuario (cabezaBloque : colaBloque) | cantidadDeBloques == 0 = unUsuario
+                                                                             | cantidadDeBloques > length colaBloque = blockChain (cabezaBloque : colaBloque) unUsuario
+                                                                             | cantidadDeBloques > 0 = saldoLuegoDeNBloques (cantidadDeBloques - 1) (blockChain [cabezaBloque] unUsuario) colaBloque
 
 
-testBlockChain = hspec $ do
-  describe "Testeo de BlockChains " $ do
-    it "El peor bloque con el cual podria empezar pepe de una cadena de 1 segundo bloque y 10 primer bloque, deberia ser cualquiera de los primer bloque, ya que empezaria con 18 monedas" $ billetera (elPeorBloque pepe listaBlockChain pepe) `shouldBe` 18
-    it "Aplicar un BlockChain compuesta del segundoBloque, seguido del primerBloque 10 veces a pepe, esto deberia dar una billetera de 115" $ blockChain listaBlockChain pepe `shouldBe` Usuario {nombre = "Jose", billetera = 115.0}
-    it "Probar tomando solo los primeros 3 bloques de una cadena de 1 segundo bloque y 10 primer bloque, aplicados a pepe, esto deberia dar un pepe con 51 monedas" $ saldoLuegoDeNBloques pepe 3 listaBlockChain `shouldBe`  Usuario {nombre = "Jose", billetera = 51.0}
-    it "Aplicar la BlockChain de 1 segundo bloque seguido de 10 segundo bloques, a una lista que contenga a pepe y lucho, esto deberia devolvernos una lista de pepe con 115 monedas y un lucho con 0 monedas" $  map (blockChain listaBlockChain) [pepe,lucho] `shouldBe` [Usuario {nombre = "Jose", billetera = 115.0},Usuario {nombre = "Luciano", billetera = 0.0}]
+--BLOCKCHAIN INFINITO--
+
+---chainInfinity bloque =  bloque : (chainInfinity (bloque.bloque))--
+
+-- chainInfinity usuario bloque =  bloque usuario  : (chainInfinity usuario (bloque.bloque)) --
 
 
--- blockchain infinito --
+--cuantosInfinitos contador numero usuario bloque  | billetera (foldr ($) usuario (take contador (chainInfinity bloque))) < numero = cuantosInfinitos (contador + 1) numero usuario bloque--
+                                              --  | otherwise = contador--
 
-cuantosInfinitos contador numero usuario bloque  | billetera (foldr ($) usuario (take contador (chainInfinity bloque))) < numero = cuantosInfinitos (contador + 1) numero usuario bloque
-                                                 | otherwise = contador
+--testeBlockChainInfinito = hspec $ do--
+--  describe "Testeo de BlockChain Infinito" $ do--
+    --it "" $ (lenght (filter (<10000 . billetera) (chainInfinity pepe primerBloque) )) + 1 `shouldBe` 11--
