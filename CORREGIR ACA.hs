@@ -228,3 +228,16 @@ listaCuantosNecesarios numero usuario (cabeza : cola) | billetera (cabeza usuari
                                                       | billetera (cabeza usuario) < numero = (cabeza : listaCuantosNecesarios numero (cabeza usuario) cola)
 
 -- El concepto clave para este ejercicio es el de Evaluación Diferida, ya que se busca que una vez encontrado el valor, que corte y no siga analizando la lista de forma infinita sin que corte --
+
+
+
+-------------------------------------------------------------------------------------------------------------------------
+-- PARA USAR EN elPeorBloque, elMasAdinerado, elMenosAdinerado --
+-----USAR FIND !!!! -----------------------------
+
+
+-- Buscar la forma de que tenga este formato => encontrarSegun criterio unaListaDeterminada = find criterio unaListaDeterminada --
+encontrarElPeorBloque unUsuario unaListaDeBloques = fromJust (find (\unBloque -> all ( >= (billetera(unBloque unUsuario))) (map (billetera . ($ unUsuario)) unaListaDeBloques)) unaListaDeBloques)
+
+listaBlockChain = (segundoBloque :(take 10 (repeat primerBloque)))
+-------------------------------------------------------------------------------------------------------------------------
