@@ -239,5 +239,8 @@ listaCuantosNecesarios numero usuario (cabeza : cola) | billetera (cabeza usuari
 -- Buscar la forma de que tenga este formato => encontrarSegun criterio unaListaDeterminada = find criterio unaListaDeterminada --
 encontrarElPeorBloque unUsuario unaListaDeBloques = fromJust (find (\unBloque -> all ( >= (billetera(unBloque unUsuario))) (map (billetera . ($ unUsuario)) unaListaDeBloques)) unaListaDeBloques)
 
+encontrarElMasAdinerado unBloque unaListaDeUsuarios = fromJust (find (\unUsuario -> all ( <= (billetera(unBloque unUsuario))) (map (billetera . (($) unBloque)) unaListaDeUsuarios)) unaListaDeUsuarios)
+
+
 listaBlockChain = (segundoBloque :(take 10 (repeat primerBloque)))
 -------------------------------------------------------------------------------------------------------------------------
