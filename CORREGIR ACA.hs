@@ -111,25 +111,8 @@ testTransferencias = hspec $ do
 ---------------------------------------------------------------------------------------------------------------------------------
   -- SEGUNDA PARTE --
 
-
-testUsuarioTransaccion = hspec $ do
-   describe "Usuario luego de transacción" $ do
-     it "Se realiza la transacción 'Lucho cierra la cuenta' en Pepe directamente (Pepe cuenta con una billetera de 10 monedas) = 10 monedas" $ (generadorTransacciones lucho cierreDeCuenta pepe (billetera pepe)) `shouldBe` 10
-     it "Aplicamos la transaccion 'pepe le da 7 unidades a lucho' a Lucho directamente (Lucho cuenta con una billetera de 2 monedas) = 9 monedas" $ (generadorTransferencias pepe lucho 7 lucho (billetera lucho)) `shouldBe` 9
-     it "Aplicamos la transaccion 'pepe le da 7 unidades a lucho' y luego 'pepe deposita 5 monedas' a Pepe (Pepe cuenta con una billetera de 10 monedas) = 8" $ ((generadorTransacciones pepe (deposito 5) pepe) . (generadorTransferencias pepe lucho 7 pepe)) (billetera pepe) `shouldBe` 8
-
-
-billeteraLuegoDeTransaccion :: Usuario -> Evento -> Usuario -> Usuario
-billeteraLuegoDeTransaccion unaPersona unEvento personaAplicada = personaAplicada {
-  billetera = (generadorTransacciones unaPersona unEvento personaAplicada) (billetera personaAplicada)
- }
-billeteraLuegoDeTransferencia :: Usuario -> Usuario -> Dinero -> Usuario -> Usuario
-billeteraLuegoDeTransferencia usuarioDeudor usuarioAcreedor unaCantidad usuarioAplicado = usuarioAplicado {
-  billetera = generadorTransferencias usuarioDeudor usuarioAcreedor unaCantidad usuarioAplicado  (billetera usuarioAplicado)
- }
-
- --BLOQUE--
- -- Creamos las transacciones para que sea menos tedioso --
+  --BLOQUE--
+  -- Creamos las transacciones para que sea menos tedioso --
 luchoCierraLaCuenta :: Usuario -> Evento
 luchoCierraLaCuenta = generadorTransacciones lucho cierreDeCuenta
 
@@ -145,12 +128,31 @@ luchoAhorranteErrante = generadorTransacciones lucho ahorranteErrante
 pepeDa7ALucho :: Usuario -> Evento
 pepeDa7ALucho = generadorTransferencias pepe lucho 7
 
+
+testUsuarioTransaccion = hspec $ do
+  describe "Usuario luego de transacción" $ do
+    it "Se realiza la transacción 'Lucho cierra la cuenta' en Pepe directamente (Pepe cuenta con una billetera de 10 monedas) = 10 monedas" $ (generadorTransacciones lucho cierreDeCuenta pepe (billetera pepe)) `shouldBe` 10
+    it "Aplicamos la transaccion 'pepe le da 7 unidades a lucho' a Lucho directamente (Lucho cuenta con una billetera de 2 monedas) = 9 monedas" $ (generadorTransferencias pepe lucho 7 lucho (billetera lucho)) `shouldBe` 9
+    it "Aplicamos la transaccion 'pepe le da 7 unidades a lucho' y luego 'pepe deposita 5 monedas' a Pepe (Pepe cuenta con una billetera de 10 monedas) = 8" $ ((generadorTransacciones pepe (deposito 5) pepe) . (generadorTransferencias pepe lucho 7 pepe)) (billetera pepe) `shouldBe` 8
+
+
+billeteraLuegoDeTransaccion :: Usuario -> Evento -> Usuario -> Usuario
+billeteraLuegoDeTransaccion unaPersona unEvento personaAplicada = personaAplicada {
+  billetera = (generadorTransacciones unaPersona unEvento personaAplicada) (billetera personaAplicada)
+}
+billeteraLuegoDeTransferencia :: Usuario -> Usuario -> Dinero -> Usuario -> Usuario
+billeteraLuegoDeTransferencia usuarioDeudor usuarioAcreedor unaCantidad usuarioAplicado = usuarioAplicado {
+  billetera = generadorTransferencias usuarioDeudor usuarioAcreedor unaCantidad usuarioAplicado  (billetera usuarioAplicado)
+}
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 testBloques = hspec $ do
    describe "Testeo de Bloques" $ do
-     it "A partir del primer bloque, pepe deberia quedar con una billetera de 18 monedas " $ (foldr ($) (billetera pepe) . map ($ pepe)) bloque1 `shouldBe` 18
+     it "A partir del primer bloque, pepe deberia quedar con una billetera de 18 monedas " $ billetera (primerBloque pepe) `shouldBe` 18
      it "Para el bloque 1, y los usuarios Pepe y Lucho, el único que quedaría con un saldo mayor a 10, es Pepe." $ filter ((>= 10) . billetera . primerBloque) [lucho, pepe] `shouldBe` [pepe]
-     it "Determinar el mas adinerado con el primer bloque en una lista con lucho y pepe, deberia ser pepe. " $ elMasAdinerado primerBloque [lucho,pepe] `shouldBe` pepe
-     it "Determinar el menos adinerado con el primer bloque en una lista con lucho y pepe, deberia ser lucho. " $ elMenosAdinerado primerBloque [lucho,pepe] `shouldBe` lucho
+     it "Determinar el mas adinerado con el primer bloque en una lista con lucho y pepe, deberia ser pepe. " $ encontrarSegun (elMasAdinerado primerBloque [lucho, pepe]) [lucho, pepe] `shouldBe` pepe
+     it "Determinar el menos adinerado con el primer bloque en una lista con lucho y pepe, deberia ser lucho. " $ encontrarSegun (elMenosAdinerado primerBloque [lucho,pepe]) [lucho, pepe] `shouldBe` lucho
 
 bloque1 = [luchoTocaYSeVa, pepeDa7ALucho, luchoAhorranteErrante, luchoTocaYSeVa, pepeDeposita5monedas, pepeDeposita5monedas, pepeDeposita5monedas, luchoCierraLaCuenta]
 
@@ -163,29 +165,14 @@ primerBloque unUsuario = unUsuario {
 saldoDeAlMenosNCreditos :: Dinero -> Bloque -> [Usuario] -> [Usuario]
 saldoDeAlMenosNCreditos n bloque unaListaDeUsuarios = filter ((> n) . billetera . bloque) unaListaDeUsuarios
 
-
--- auxiliar --
-elMasRicoEsElPrimero :: Usuario -> Usuario -> Bloque -> Bool
-elMasRicoEsElPrimero usuario1 usuario2 unBloque = billetera (unBloque usuario1) >= billetera (unBloque usuario2)
--------------
-
-elMasAdinerado :: Bloque -> [Usuario] -> Usuario
-elMasAdinerado unBloque (cabezaUsuario : []) = cabezaUsuario
-elMasAdinerado unBloque (cabezaUsuario : (cabezaColaUsuarios:colaColaUsuarios)) | elMasRicoEsElPrimero cabezaUsuario cabezaColaUsuarios unBloque = elMasAdinerado unBloque (cabezaUsuario : colaColaUsuarios)
-                                                                                | otherwise = elMasAdinerado unBloque (cabezaColaUsuarios : colaColaUsuarios)
-
-elMenosAdinerado :: Bloque -> [Usuario] -> Usuario
-elMenosAdinerado unBloque (cabezaUsuario : []) = cabezaUsuario
-elMenosAdinerado unBloque (cabezaUsuario : (cabezaColaUsuarios:colaColaUsuarios)) | elMasRicoEsElPrimero cabezaColaUsuarios cabezaUsuario unBloque = elMenosAdinerado unBloque (cabezaUsuario : colaColaUsuarios)
-                                                                                  | otherwise = elMenosAdinerado unBloque (cabezaColaUsuarios : colaColaUsuarios)
-
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
  --BLOCKCHAIN--
 
 testBlockChain = hspec $ do
       describe "Testeo de BlockChains " $ do
-      it "El peor bloque con el cual podria empezar pepe de una cadena de 1 segundo bloque y 10 primer bloque, deberia ser cualquiera de los primer bloque, ya que empezaria con 18 monedas" $ billetera (elPeorBloque pepe (segundoBloque :(take 10 (repeat primerBloque))) pepe) `shouldBe` 18
-      it "Aplicar un BlockChain compuesta del segundoBloque, seguido del primerBloque 10 veces a pepe, esto deberia dar una billetera de 115" $ foldr ($) pepe listaBlockChain `shouldBe` Usuario {nombre = "Jose", billetera = 115.0}
-      it "Probar tomando solo los primeros 3 bloques de una cadena de 1 segundo bloque y 10 primer bloque, aplicados a pepe, esto deberia dar un pepe con 51 monedas" $ foldr ($) pepe (take 3 listaBlockChain) `shouldBe`  Usuario {nombre = "Jose", billetera = 51.0}
+      it "El peor bloque con el cual podria empezar pepe de una cadena de 1 segundo bloque y 10 primer bloque, deberia ser cualquiera de los primer bloque, ya que empezaria con 18 monedas" $ (billetera . (encontrarSegun (elPeorBloque pepe listaBlockChain) listaBlockChain)) pepe `shouldBe` 18
+      it "Aplicar un BlockChain compuesta del segundoBloque, seguido del primerBloque 10 veces a pepe, esto deberia dar una billetera de 115" $ blockChain listaBlockChain pepe `shouldBe` Usuario {nombre = "Jose", billetera = 115.0}
+      it "Probar tomando solo los primeros 3 bloques de una cadena de 1 segundo bloque y 10 primer bloque, aplicados a pepe, esto deberia dar un pepe con 51 monedas" $ foldr ($) pepe (take 3 listaBlockChain) `shouldBe`  Usuario {nombre = "Jose", billetera = 51.0} -- creo que se puede hacer fold aca --
       it "Aplicar la BlockChain de 1 segundo bloque seguido de 10 segundo bloques, a una lista que contenga a pepe y lucho, esto deberia devolvernos una lista de pepe con 115 monedas y un lucho con 0 monedas" $  sum (map (billetera . (blockChain listaBlockChain)) [pepe,lucho]) `shouldBe` 115
 
 bloque2 = [pepeDeposita5monedas, pepeDeposita5monedas, pepeDeposita5monedas, pepeDeposita5monedas, pepeDeposita5monedas]
@@ -194,15 +181,6 @@ segundoBloque :: Bloque
 segundoBloque unUsuario = unUsuario {
     billetera = (foldr ($) (billetera unUsuario) . map ($ unUsuario)) bloque2
 }
-
-elPeorBloque :: Usuario -> [Bloque] -> Bloque
-elPeorBloque unUsuario [unBloque] =  unBloque
-elPeorBloque unUsuario (cabezaBloque : medioBloque :colaBloque) | elPeorBloqueEsElSegundo cabezaBloque medioBloque unUsuario = elPeorBloque unUsuario (medioBloque:colaBloque)
-                                                                | otherwise = elPeorBloque unUsuario (cabezaBloque:colaBloque)
--- auxiliar --
-elPeorBloqueEsElSegundo :: Bloque -> Bloque -> Usuario -> Bool
-elPeorBloqueEsElSegundo unBloque otroBloque unUsuario = billetera (unBloque unUsuario) >= billetera (otroBloque unUsuario)
---------------
 
 saldoLuegoDeNBloques :: Int -> Usuario -> [Bloque] -> Usuario
 saldoLuegoDeNBloques cantidadDeBloques unUsuario listaDeBloques = blockChain (take cantidadDeBloques listaDeBloques) unUsuario
@@ -240,11 +218,11 @@ listaCuantosNecesarios numero usuario (cabeza : cola) | billetera (cabeza usuari
 encontrarSegun criterio unaListaDeterminada = fromJust (find criterio unaListaDeterminada)
 
 -- por consola entraría así: encontrarSegun (criterioElPeorBloque pepe unaListaDeBloques) unaListaDeBloques --
-criterioElPeorBloque = (\unUsuario unaListaDeBloques unBloque -> all ( >= (billetera (unBloque unUsuario))) $ (map (billetera . ($ unUsuario)) unaListaDeBloques))
--- por consola entraría así: encontrarSegun (criterioElMasAdinerado bloque1 [pepe, lucho]) [pepe, lucho] --
-criterioElMasAdinerado = (\unBloque unaListaDeUsuarios unUsuario -> all ( <= (billetera (unBloque unUsuario))) $ (map (billetera . (($) unBloque)) unaListaDeUsuarios))
--- por consola entraría así: encontrarSegun (criterioElMenosAdinerado bloque1 [pepe, lucho]) [pepe, lucho] --
-criterioElMenosAdinerado = (\unBloque unaListaDeUsuarios unUsuario -> all ( >= (billetera (unBloque unUsuario))) $ (map (billetera . (($) unBloque)) unaListaDeUsuarios))
+elPeorBloque = (\unUsuario unaListaDeBloques unBloque -> all ( >= (billetera (unBloque unUsuario))) $ (map (billetera . ($ unUsuario)) unaListaDeBloques))
+-- por consola entraría así: encontrarSegun (criterioElMasAdinerado primerBloque [pepe, lucho]) [pepe, lucho] --
+elMasAdinerado = (\unBloque unaListaDeUsuarios unUsuario -> all ( <= (billetera (unBloque unUsuario))) $ (map (billetera . (($) unBloque)) unaListaDeUsuarios))
+-- por consola entraría así: encontrarSegun (criterioElMenosAdinerado primerBloque [pepe, lucho]) [pepe, lucho] --
+elMenosAdinerado = (\unBloque unaListaDeUsuarios unUsuario -> all ( >= (billetera (unBloque unUsuario))) $ (map (billetera . (($) unBloque)) unaListaDeUsuarios))
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 -- ESTOS 3 SON SIN GENERICO, PERO COMO HAY PARTES QUE SE REPITEN, HABRÍA QUE DIVIDIRLO POR CRITERIO (como hice arriba) ---------------------
@@ -259,6 +237,7 @@ listaBlockChain = (segundoBloque :(take 10 (repeat primerBloque)))
 
 -------------------------------------------------------------------------------------------------------------------------------------------
 -- GENERADOR FOLD ------
+
 
 
 -------------------------------------------------------------------------------------------------------------------------
