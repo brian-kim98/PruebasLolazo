@@ -207,7 +207,7 @@ elPeorBloqueEsElSegundo unBloque otroBloque unUsuario = billetera (unBloque unUs
 saldoLuegoDeNBloques :: Int -> Usuario -> [Bloque] -> Usuario
 saldoLuegoDeNBloques cantidadDeBloques unUsuario listaDeBloques = blockChain (take cantidadDeBloques listaDeBloques) unUsuario
 
-listaBlockChain = (segundoBloque :(take 10 (repeat primerBloque)))
+-- listaBlockChain = (segundoBloque :(take 10 (repeat primerBloque))) --
 
 type BlockChain = [Bloque]
 blockChain :: BlockChain -> Usuario -> Usuario
@@ -237,10 +237,11 @@ listaCuantosNecesarios numero usuario (cabeza : cola) | billetera (cabeza usuari
 
 
 -- Buscar la forma de que tenga este formato => encontrarSegun criterio unaListaDeterminada = find criterio unaListaDeterminada --
-encontrarElPeorBloque unUsuario unaListaDeBloques = fromJust (find (\unBloque -> all ( >= (billetera(unBloque unUsuario))) (map (billetera . ($ unUsuario)) unaListaDeBloques)) unaListaDeBloques)
+encontrarElPeorBloque unUsuario unaListaDeBloques = fromJust (find (\unBloque -> all ( >= (billetera(unBloque unUsuario))) $ (map (billetera . ($ unUsuario)) unaListaDeBloques)) unaListaDeBloques)
 
-encontrarElMasAdinerado unBloque unaListaDeUsuarios = fromJust (find (\unUsuario -> all ( <= (billetera(unBloque unUsuario))) (map (billetera . (($) unBloque)) unaListaDeUsuarios)) unaListaDeUsuarios)
+encontrarElMasAdinerado unBloque unaListaDeUsuarios = fromJust (find (\unUsuario -> all ( <= (billetera(unBloque unUsuario))) $ (map (billetera . (($) unBloque)) unaListaDeUsuarios)) unaListaDeUsuarios)
 
+encontrarElMenosAdinerado unBloque unaListaDeUsuarios = fromJust (find (\unUsuario -> all ( >= (billetera(unBloque unUsuario))) $ (map (billetera . (($) unBloque)) unaListaDeUsuarios)) unaListaDeUsuarios)
 
 listaBlockChain = (segundoBloque :(take 10 (repeat primerBloque)))
 -------------------------------------------------------------------------------------------------------------------------
