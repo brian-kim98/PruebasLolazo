@@ -77,7 +77,7 @@ testUsuarios = hspec $ do
 
 generadorTransacciones :: Transaccion
 generadorTransacciones unaPersona unEvento personaAplicada | mismoUsuario unaPersona personaAplicada = unEvento
-                                                              | otherwise = quedaIgual
+                                                           | otherwise = quedaIgual
 
 mismoUsuario :: Usuario -> Usuario -> Bool
 mismoUsuario persona1 persona2 = nombre persona1 == nombre persona2
@@ -188,7 +188,7 @@ testBlockChain = hspec $ do
       it "Probar tomando solo los primeros 3 bloques de una cadena de 1 segundo bloque y 10 primer bloque, aplicados a pepe, esto deberia dar un pepe con 51 monedas" $ foldr ($) pepe (take 3 listaBlockChain) `shouldBe`  Usuario {nombre = "Jose", billetera = 51.0}
       it "Aplicar la BlockChain de 1 segundo bloque seguido de 10 segundo bloques, a una lista que contenga a pepe y lucho, esto deberia devolvernos una lista de pepe con 115 monedas y un lucho con 0 monedas" $  sum (map (billetera . (blockChain listaBlockChain)) [pepe,lucho]) `shouldBe` 115
 
-bloque2 = [pepeDeposita5monedas, pepeDeposita5monedas, pepeDeposita5monedas, pepeDeposita5monedas ,pepeDeposita5monedas]
+bloque2 = [pepeDeposita5monedas, pepeDeposita5monedas, pepeDeposita5monedas, pepeDeposita5monedas, pepeDeposita5monedas]
 
 segundoBloque :: Bloque
 segundoBloque unUsuario = unUsuario {
@@ -210,6 +210,7 @@ saldoLuegoDeNBloques cantidadDeBloques unUsuario listaDeBloques = blockChain (ta
 -- listaBlockChain = (segundoBloque :(take 10 (repeat primerBloque))) --
 
 type BlockChain = [Bloque]
+
 blockChain :: BlockChain -> Usuario -> Usuario
 blockChain unaListaDeBloques unUsuario = foldr ($) unUsuario unaListaDeBloques
 
@@ -218,7 +219,7 @@ blockChain unaListaDeBloques unUsuario = foldr ($) unUsuario unaListaDeBloques
 
 testBlockChainInfinito = hspec $ do
   describe "Testeo de BlockChain Infinito" $ do
-    it "Cuantos elementos de  una BlockChain infinita creada a partir del bloque 1 deben usarse para que Pepe llegue a tener 10000 créditos, deberian ser 11 para llegar a 16386" $ length (listaCuantosNecesarios 10000 pepe (blockChainInfinito primerBloque))  `shouldBe` 11
+    it "Cuantos elementos de una BlockChain infinita creada a partir del bloque 1 deben usarse para que Pepe llegue a tener 10000 créditos, deberian ser 11 para llegar a 16386" $ length (listaCuantosNecesarios 10000 pepe (blockChainInfinito primerBloque))  `shouldBe` 11
 
 blockChainInfinito :: Bloque -> [Bloque]
 blockChainInfinito bloque =  bloque : (blockChainInfinito (bloque.bloque))
@@ -230,18 +231,34 @@ listaCuantosNecesarios numero usuario (cabeza : cola) | billetera (cabeza usuari
 -- El concepto clave para este ejercicio es el de Evaluación Diferida, ya que se busca que una vez encontrado el valor, que corte y no siga analizando la lista de forma infinita sin que corte --
 
 
-
 -------------------------------------------------------------------------------------------------------------------------
 -- PARA USAR EN elPeorBloque, elMasAdinerado, elMenosAdinerado --
 -----USAR FIND !!!! -----------------------------
 
 
--- Buscar la forma de que tenga este formato => encontrarSegun criterio unaListaDeterminada = find criterio unaListaDeterminada --
-encontrarElPeorBloque unUsuario unaListaDeBloques = fromJust (find (\unBloque -> all ( >= (billetera(unBloque unUsuario))) $ (map (billetera . ($ unUsuario)) unaListaDeBloques)) unaListaDeBloques)
+-- Buscar la forma de que tenga este formato => encontrarSegun criterio unaListaDeterminada = find criterio unaListaDeterminada ----------------------------------------
+encontrarSegun criterio unaListaDeterminada = fromJust (find criterio unaListaDeterminada)
 
-encontrarElMasAdinerado unBloque unaListaDeUsuarios = fromJust (find (\unUsuario -> all ( <= (billetera(unBloque unUsuario))) $ (map (billetera . (($) unBloque)) unaListaDeUsuarios)) unaListaDeUsuarios)
+-- por consola entraría así: encontrarSegun (criterioElPeorBloque pepe unaListaDeBloques) unaListaDeBloques --
+criterioElPeorBloque = (\unUsuario unaListaDeBloques unBloque -> all ( >= (billetera (unBloque unUsuario))) $ (map (billetera . ($ unUsuario)) unaListaDeBloques))
+-- por consola entraría así: encontrarSegun (criterioElMasAdinerado bloque1 [pepe, lucho]) [pepe, lucho] --
+criterioElMasAdinerado = (\unBloque unaListaDeUsuarios unUsuario -> all ( <= (billetera (unBloque unUsuario))) $ (map (billetera . (($) unBloque)) unaListaDeUsuarios))
+-- por consola entraría así: encontrarSegun (criterioElMenosAdinerado bloque1 [pepe, lucho]) [pepe, lucho] --
+criterioElMenosAdinerado = (\unBloque unaListaDeUsuarios unUsuario -> all ( >= (billetera (unBloque unUsuario))) $ (map (billetera . (($) unBloque)) unaListaDeUsuarios))
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-encontrarElMenosAdinerado unBloque unaListaDeUsuarios = fromJust (find (\unUsuario -> all ( >= (billetera(unBloque unUsuario))) $ (map (billetera . (($) unBloque)) unaListaDeUsuarios)) unaListaDeUsuarios)
+-- ESTOS 3 SON SIN GENERICO, PERO COMO HAY PARTES QUE SE REPITEN, HABRÍA QUE DIVIDIRLO POR CRITERIO (como hice arriba) ---------------------
+encontrarElPeorBloque unUsuario unaListaDeBloques = fromJust (find (\unBloque -> all ( >= (billetera (unBloque unUsuario))) $ (map (billetera . ($ unUsuario)) unaListaDeBloques)) unaListaDeBloques)
+
+encontrarElMasAdinerado unBloque unaListaDeUsuarios = fromJust (find (\unUsuario -> all ( <= (billetera (unBloque unUsuario))) $ (map (billetera . (($) unBloque)) unaListaDeUsuarios)) unaListaDeUsuarios)
+
+encontrarElMenosAdinerado unBloque unaListaDeUsuarios = fromJust (find (\unUsuario -> all ( >= (billetera (unBloque unUsuario))) $ (map (billetera . (($) unBloque)) unaListaDeUsuarios)) unaListaDeUsuarios)
+
 
 listaBlockChain = (segundoBloque :(take 10 (repeat primerBloque)))
+
+-------------------------------------------------------------------------------------------------------------------------------------------
+-- GENERADOR FOLD ------
+
+
 -------------------------------------------------------------------------------------------------------------------------
