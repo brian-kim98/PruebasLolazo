@@ -16,6 +16,8 @@ type Transaccion = Usuario -> Evento -> Usuario -> Evento
 
 type Transferencias = Usuario -> Usuario -> Dinero -> Usuario -> Evento
 
+type BlockChain = [Bloque]
+
 data Usuario = Usuario {
 nombre :: Nombre,
 billetera :: Dinero
@@ -150,7 +152,7 @@ billeteraLuegoDeTransferencia usuarioDeudor usuarioAcreedor unaCantidad usuarioA
 testBloques = hspec $ do
    describe "Testeo de Bloques" $ do
      it "A partir del primer bloque, pepe deberia quedar con una billetera de 18 monedas " $ billetera (primerBloque pepe) `shouldBe` 18
-     it "Para el bloque 1, y los usuarios Pepe y Lucho, el único que quedaría con un saldo mayor a 10, es Pepe." $ filter ((>= 10) . billetera . primerBloque) [lucho, pepe] `shouldBe` [pepe]
+     it "Para el bloque 1, y los usuarios Pepe y Lucho, el único que quedaría con un saldo mayor a 10, es Pepe." $ saldoDeAlMenosNCreditos 10 primerBloque [lucho, pepe] `shouldBe` [pepe]
      it "Determinar el mas adinerado con el primer bloque en una lista con lucho y pepe, deberia ser pepe. " $ encontrarSegun (elMasAdinerado primerBloque [lucho, pepe]) [lucho, pepe] `shouldBe` pepe
      it "Determinar el menos adinerado con el primer bloque en una lista con lucho y pepe, deberia ser lucho. " $ encontrarSegun (elMenosAdinerado primerBloque [lucho,pepe]) [lucho, pepe] `shouldBe` lucho
 
@@ -163,7 +165,7 @@ primerBloque unUsuario = unUsuario {
    }
 
 saldoDeAlMenosNCreditos :: Dinero -> Bloque -> [Usuario] -> [Usuario]
-saldoDeAlMenosNCreditos n bloque unaListaDeUsuarios = filter ((> n) . billetera . bloque) unaListaDeUsuarios
+saldoDeAlMenosNCreditos cantidadDeMonedas bloque = filter ((> cantidadDeMonedas) . billetera . bloque)
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
  --BLOCKCHAIN--
@@ -172,26 +174,25 @@ testBlockChain = hspec $ do
       describe "Testeo de BlockChains " $ do
       it "El peor bloque con el cual podria empezar pepe de una cadena de 1 segundo bloque y 10 primer bloque, deberia ser cualquiera de los primer bloque, ya que empezaria con 18 monedas" $ (billetera . (encontrarSegun (elPeorBloque pepe listaBlockChain) listaBlockChain)) pepe `shouldBe` 18
       it "Aplicar un BlockChain compuesta del segundoBloque, seguido del primerBloque 10 veces a pepe, esto deberia dar una billetera de 115" $ blockChain listaBlockChain pepe `shouldBe` Usuario {nombre = "Jose", billetera = 115.0}
-      it "Probar tomando solo los primeros 3 bloques de una cadena de 1 segundo bloque y 10 primer bloque, aplicados a pepe, esto deberia dar un pepe con 51 monedas" $ foldr ($) pepe (take 3 listaBlockChain) `shouldBe`  Usuario {nombre = "Jose", billetera = 51.0} -- creo que se puede hacer fold aca --
+      it "Probar tomando solo los primeros 3 bloques de una cadena de 1 segundo bloque y 10 primer bloque, aplicados a pepe, esto deberia dar un pepe con 51 monedas" $ saldoLuegoDeNBloques 3 listaBlockChain pepe `shouldBe`  Usuario {nombre = "Jose", billetera = 51.0}
       it "Aplicar la BlockChain de 1 segundo bloque seguido de 10 segundo bloques, a una lista que contenga a pepe y lucho, esto deberia devolvernos una lista de pepe con 115 monedas y un lucho con 0 monedas" $  sum (map (billetera . (blockChain listaBlockChain)) [pepe,lucho]) `shouldBe` 115
 
 bloque2 = [pepeDeposita5monedas, pepeDeposita5monedas, pepeDeposita5monedas, pepeDeposita5monedas, pepeDeposita5monedas]
+
+listaBlockChain = (segundoBloque :(take 10 (repeat primerBloque)))
+
 
 segundoBloque :: Bloque
 segundoBloque unUsuario = unUsuario {
     billetera = (foldr ($) (billetera unUsuario) . map ($ unUsuario)) bloque2
 }
 
-saldoLuegoDeNBloques :: Int -> Usuario -> [Bloque] -> Usuario
-saldoLuegoDeNBloques cantidadDeBloques unUsuario listaDeBloques = blockChain (take cantidadDeBloques listaDeBloques) unUsuario
+saldoLuegoDeNBloques :: Int -> [Bloque] -> Usuario -> Usuario
+saldoLuegoDeNBloques cantidadDeBloques listaDeBloques = blockChain (take cantidadDeBloques listaDeBloques)
 
--- listaBlockChain = (segundoBloque :(take 10 (repeat primerBloque))) --
-
-type BlockChain = [Bloque]
 
 blockChain :: BlockChain -> Usuario -> Usuario
 blockChain unaListaDeBloques unUsuario = foldr ($) unUsuario unaListaDeBloques
-
 
 --BLOCKCHAIN INFINITO--
 
@@ -214,14 +215,17 @@ listaCuantosNecesarios numero usuario (cabeza : cola) | billetera (cabeza usuari
 -----USAR FIND !!!! -----------------------------
 
 
--- Buscar la forma de que tenga este formato => encontrarSegun criterio unaListaDeterminada = find criterio unaListaDeterminada ----------------------------------------
+-- Buscar la forma de que tenga este formato => encontrarSegun criterio unaListaDeterminada = find criterio unaListaDeterminada -----------------------------------------
 encontrarSegun criterio unaListaDeterminada = fromJust (find criterio unaListaDeterminada)
 
 -- por consola entraría así: encontrarSegun (criterioElPeorBloque pepe unaListaDeBloques) unaListaDeBloques --
+elPeorBloque :: Usuario -> [Bloque] -> Bloque -> Bool
 elPeorBloque = (\unUsuario unaListaDeBloques unBloque -> all ( >= (billetera (unBloque unUsuario))) $ (map (billetera . ($ unUsuario)) unaListaDeBloques))
 -- por consola entraría así: encontrarSegun (criterioElMasAdinerado primerBloque [pepe, lucho]) [pepe, lucho] --
+elMasAdinerado:: Bloque -> [Usuario] -> Usuario -> Bool
 elMasAdinerado = (\unBloque unaListaDeUsuarios unUsuario -> all ( <= (billetera (unBloque unUsuario))) $ (map (billetera . (($) unBloque)) unaListaDeUsuarios))
 -- por consola entraría así: encontrarSegun (criterioElMenosAdinerado primerBloque [pepe, lucho]) [pepe, lucho] --
+elMenosAdinerado:: Bloque -> [Usuario] -> Usuario -> Bool
 elMenosAdinerado = (\unBloque unaListaDeUsuarios unUsuario -> all ( >= (billetera (unBloque unUsuario))) $ (map (billetera . (($) unBloque)) unaListaDeUsuarios))
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -231,13 +235,5 @@ encontrarElPeorBloque unUsuario unaListaDeBloques = fromJust (find (\unBloque ->
 encontrarElMasAdinerado unBloque unaListaDeUsuarios = fromJust (find (\unUsuario -> all ( <= (billetera (unBloque unUsuario))) $ (map (billetera . (($) unBloque)) unaListaDeUsuarios)) unaListaDeUsuarios)
 
 encontrarElMenosAdinerado unBloque unaListaDeUsuarios = fromJust (find (\unUsuario -> all ( >= (billetera (unBloque unUsuario))) $ (map (billetera . (($) unBloque)) unaListaDeUsuarios)) unaListaDeUsuarios)
-
-
-listaBlockChain = (segundoBloque :(take 10 (repeat primerBloque)))
-
--------------------------------------------------------------------------------------------------------------------------------------------
--- GENERADOR FOLD ------
-
-
 
 -------------------------------------------------------------------------------------------------------------------------
