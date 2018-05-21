@@ -164,6 +164,19 @@ primerBloque unUsuario = unUsuario {
   billetera = (foldr ($) (billetera unUsuario) . map ($ unUsuario)) bloque1
    }
 
+ --encontrarSegun :: (a -> [b] -> b -> b) -> [b] -> b--
+encontrarSegun criterio unaListaDeterminada = fromJust (find criterio unaListaDeterminada)
+-- por consola entraría así: encontrarSegun (criterioElPeorBloque pepe unaListaDeBloques) unaListaDeBloques --
+elPeorBloque :: Usuario -> [Bloque] -> Bloque -> Bool
+elPeorBloque = (\unUsuario unaListaDeBloques unBloque -> all ( >= (billetera (unBloque unUsuario))) $ (map (billetera . ($ unUsuario)) unaListaDeBloques))
+-- por consola entraría así: encontrarSegun (criterioElMasAdinerado primerBloque [pepe, lucho]) [pepe, lucho] --
+elMasAdinerado:: Bloque -> [Usuario] -> Usuario -> Bool
+elMasAdinerado = (\unBloque unaListaDeUsuarios unUsuario -> all ( <= (billetera (unBloque unUsuario))) $ (map (billetera . (($) unBloque)) unaListaDeUsuarios))
+-- por consola entraría así: encontrarSegun (criterioElMenosAdinerado primerBloque [pepe, lucho]) [pepe, lucho] --
+elMenosAdinerado:: Bloque -> [Usuario] -> Usuario -> Bool
+elMenosAdinerado = (\unBloque unaListaDeUsuarios unUsuario -> all ( >= (billetera (unBloque unUsuario))) $ (map (billetera . (($) unBloque)) unaListaDeUsuarios))
+
+
 saldoDeAlMenosNCreditos :: Dinero -> Bloque -> [Usuario] -> [Usuario]
 saldoDeAlMenosNCreditos cantidadDeMonedas bloque = filter ((> cantidadDeMonedas) . billetera . bloque)
 
@@ -180,7 +193,6 @@ testBlockChain = hspec $ do
 bloque2 = [pepeDeposita5monedas, pepeDeposita5monedas, pepeDeposita5monedas, pepeDeposita5monedas, pepeDeposita5monedas]
 
 listaBlockChain = (segundoBloque :(take 10 (repeat primerBloque)))
-
 
 segundoBloque :: Bloque
 segundoBloque unUsuario = unUsuario {
@@ -210,30 +222,13 @@ listaCuantosNecesarios numero usuario (cabeza : cola) | billetera (cabeza usuari
 -- El concepto clave para este ejercicio es el de Evaluación Diferida, ya que se busca que una vez encontrado el valor, que corte y no siga analizando la lista de forma infinita sin que corte --
 
 
--------------------------------------------------------------------------------------------------------------------------
--- PARA USAR EN elPeorBloque, elMasAdinerado, elMenosAdinerado --
------USAR FIND !!!! -----------------------------
-
-
--- Buscar la forma de que tenga este formato => encontrarSegun criterio unaListaDeterminada = find criterio unaListaDeterminada -----------------------------------------
-encontrarSegun criterio unaListaDeterminada = fromJust (find criterio unaListaDeterminada)
-
--- por consola entraría así: encontrarSegun (criterioElPeorBloque pepe unaListaDeBloques) unaListaDeBloques --
-elPeorBloque :: Usuario -> [Bloque] -> Bloque -> Bool
-elPeorBloque = (\unUsuario unaListaDeBloques unBloque -> all ( >= (billetera (unBloque unUsuario))) $ (map (billetera . ($ unUsuario)) unaListaDeBloques))
--- por consola entraría así: encontrarSegun (criterioElMasAdinerado primerBloque [pepe, lucho]) [pepe, lucho] --
-elMasAdinerado:: Bloque -> [Usuario] -> Usuario -> Bool
-elMasAdinerado = (\unBloque unaListaDeUsuarios unUsuario -> all ( <= (billetera (unBloque unUsuario))) $ (map (billetera . (($) unBloque)) unaListaDeUsuarios))
--- por consola entraría así: encontrarSegun (criterioElMenosAdinerado primerBloque [pepe, lucho]) [pepe, lucho] --
-elMenosAdinerado:: Bloque -> [Usuario] -> Usuario -> Bool
-elMenosAdinerado = (\unBloque unaListaDeUsuarios unUsuario -> all ( >= (billetera (unBloque unUsuario))) $ (map (billetera . (($) unBloque)) unaListaDeUsuarios))
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 -- ESTOS 3 SON SIN GENERICO, PERO COMO HAY PARTES QUE SE REPITEN, HABRÍA QUE DIVIDIRLO POR CRITERIO (como hice arriba) ---------------------
-encontrarElPeorBloque unUsuario unaListaDeBloques = fromJust (find (\unBloque -> all ( >= (billetera (unBloque unUsuario))) $ (map (billetera . ($ unUsuario)) unaListaDeBloques)) unaListaDeBloques)
+--encontrarElPeorBloque unUsuario unaListaDeBloques = fromJust (find (\unBloque -> all ( >= (billetera (unBloque unUsuario))) $ (map (billetera . ($ unUsuario)) unaListaDeBloques)) unaListaDeBloques)
 
-encontrarElMasAdinerado unBloque unaListaDeUsuarios = fromJust (find (\unUsuario -> all ( <= (billetera (unBloque unUsuario))) $ (map (billetera . (($) unBloque)) unaListaDeUsuarios)) unaListaDeUsuarios)
+--encontrarElMasAdinerado unBloque unaListaDeUsuarios = fromJust (find (\unUsuario -> all ( <= (billetera (unBloque unUsuario))) $ (map (billetera . (($) unBloque)) unaListaDeUsuarios)) unaListaDeUsuarios)
 
-encontrarElMenosAdinerado unBloque unaListaDeUsuarios = fromJust (find (\unUsuario -> all ( >= (billetera (unBloque unUsuario))) $ (map (billetera . (($) unBloque)) unaListaDeUsuarios)) unaListaDeUsuarios)
+--encontrarElMenosAdinerado unBloque unaListaDeUsuarios = fromJust (find (\unUsuario -> all ( >= (billetera (unBloque unUsuario))) $ (map (billetera . (($) unBloque)) unaListaDeUsuarios)) unaListaDeUsuarios)
 
 -------------------------------------------------------------------------------------------------------------------------
