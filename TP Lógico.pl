@@ -26,7 +26,7 @@ mira(maiu, onePiece).
 mira(maiu, got).
 
 mira(gaston, hoc).
-%no ponemos a Alf por el Principio del Universo Cerrado
+%no ponemos a Alf por el Principio del Universo Cerrado, ya que no mira ninguna serie, pero lo podemos definir como persona
 
 esPopular(got).
 esPopular(hoc).
@@ -37,6 +37,7 @@ planeaVer(juan, hoc).
 planeaVer(aye, got).
 planeaVer(gaston, himym).
 
+%temporada (serie, temporada, episodios)
 temporada(got, 3, 12).
 temporada(got, 2, 10).
 temporada(himym, 1, 23).
@@ -62,25 +63,26 @@ esSpoiler(Serie, QuePaso):-
   serie(Serie),
   paso(Serie, _, _, QuePaso).
 
+%Se pueden hacer tanto consultas individuales como existenciales, ya que (Ver conceptos?)
 
 leSpoileo(Persona1, Persona2, Serie):-
   persona(Persona1),
   persona(Persona2),
   planeaVer(Persona2, Serie),
-  leDijo(Persona1, Persona2, Serie, _).
+  leDijo(Persona1, Persona2, Serie, QuePaso),
+  paso(Serie, _, _, QuePaso).
 
 leSpoileo(Persona1, Persona2, Serie):-
   persona(Persona1),
   persona(Persona2),
   mira(Persona2, Serie),
-  leDijo(Persona1, Persona2, Serie, _).
+  leDijo(Persona1, Persona2, Serie, QuePaso),
+  paso(Serie, _, _, QuePaso).
 
 
-televidenteResponsable(Persona):-
-  persona(Persona),
-  mira(Persona, Serie),
-  not(leSpoileo(Persona, _, Serie)).
+televidenteResponsable(Persona):- not(leSpoileo(Persona, Alguien, Serie)).
 
+%HASTA ACA CREO QUE ESTA PERFECT :D
 esFuerte(relacion(parentesco,_,_)).
 esFuerte(muerte(_)).
 esFuerte(relacion(amorosa,_,_)).
