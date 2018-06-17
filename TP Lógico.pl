@@ -12,7 +12,6 @@ persona(nico).
 persona(maiu).
 persona(gaston).
 persona(aye).
-persona(alf).
 
 mira(juan, himym).
 mira(juan, futurama).
@@ -63,6 +62,7 @@ esSpoiler(Serie, QuePaso):-
   serie(Serie),
   paso(Serie, _, _, QuePaso).
 
+
 %Se pueden hacer tanto consultas individuales como existenciales, ya que (Ver conceptos?)
 
 leSpoileo(Persona1, Persona2, Serie):-
@@ -80,7 +80,9 @@ leSpoileo(Persona1, Persona2, Serie):-
   paso(Serie, _, _, QuePaso).
 
 
-televidenteResponsable(Persona):- not(leSpoileo(Persona, Alguien, Serie)).
+televidenteResponsable(Persona):-
+  persona(Persona),
+  not(leSpoileo(Persona, _, _)).
 
 %HASTA ACA CREO QUE ESTA PERFECT :D
 esFuerte(relacion(parentesco,_,_)).
@@ -90,16 +92,13 @@ esFuerte(relacion(amorosa,_,_)).
 
 vieneZafando(Persona, Serie):-
   persona(Persona),
-
   mira(Persona, Serie),
-  not(leDijo(_, Persona, Serie, AlgoQuePaso)),
-  esFuerte(AlgoQuePaso).
+  not(leDijo(_, Persona, Serie, _)).
 
 vieneZafando(Persona, Serie):-
   persona(Persona),
-
   planeaVer(Persona, Serie),
-  not(leDijo(_, Persona, Serie,AlgoQuePaso)),
-  esFuerte(AlgoQuePaso).
+  not(leDijo(_, Persona, Serie,_)).
 
+%maiu zafa con onePiece ? (Preguntar)
 %FALTA VER QUE ONDA CON LO DE "TODAS LAS TEMPORADAS"
