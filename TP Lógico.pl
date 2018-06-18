@@ -40,6 +40,7 @@ planeaVer(gaston, himym).
 temporada(got, 3, 12).
 temporada(got, 2, 10).
 temporada(himym, 1, 23).
+temporada(himym,2,42).
 temporada(drHouse, 8, 16).
 %medio raro, revisar bien esto de arriba
 
@@ -95,10 +96,8 @@ esFuerteOPopular(Serie):-
 
 %para
 esFuerteOPopular(Serie):-
-  paso(Serie,Temporada,_,Algo),
-  temporada(Serie,Temporada,_),
-  esFuerte(Algo).
-
+  temporada(Serie,_,_),
+  forall(temporada(Serie,Temporada,_),(paso(Serie,Temporada,_,Algo),esFuerte(Algo))).
 
 
 vieneZafando(Persona, Serie):-
