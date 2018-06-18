@@ -89,16 +89,29 @@ esFuerte(relacion(parentesco,_,_)).
 esFuerte(muerte(_)).
 esFuerte(relacion(amorosa,_,_)).
 
+%predicado auxiliar
+esFuerteOPopular(Serie):-
+  esPopular(Serie).
+
+%para
+esFuerteOPopular(Serie):-
+  paso(Serie,Temporada,_,Algo),
+  temporada(Serie,Temporada,_),
+  esFuerte(Algo).
+
+
 
 vieneZafando(Persona, Serie):-
+  esFuerteOPopular(Serie),
   persona(Persona),
   mira(Persona, Serie),
-  not(leDijo(_, Persona, Serie, _)).
+  not(leSpoileo(_,Persona,Serie)).
 
 vieneZafando(Persona, Serie):-
+  esFuerteOPopular(Serie),
   persona(Persona),
   planeaVer(Persona, Serie),
-  not(leDijo(_, Persona, Serie,_)).
+  not(leSpoileo(_,Persona,Serie)).
 
 %maiu zafa con onePiece ? (Preguntar)
 %FALTA VER QUE ONDA CON LO DE "TODAS LAS TEMPORADAS"
