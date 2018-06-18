@@ -40,7 +40,6 @@ planeaVer(gaston, himym).
 temporada(got, 3, 12).
 temporada(got, 2, 10).
 temporada(himym, 1, 23).
-temporada(himym,2,42).
 temporada(drHouse, 8, 16).
 %medio raro, revisar bien esto de arriba
 
@@ -51,6 +50,7 @@ paso(starWars, 3, 2, relacion(parentesco, vader, luke)).
 paso(himym, 1, 1, relacion(amorosa, ted, robin)).
 paso(himym, 4, 3, relacion(amorosa, swarley, robin)).
 paso(got, 4, 5, relacion(amistad, tyrion, dragon)).
+
 
 leDijo(gaston, maiu, got, relacion(amistad, tyrion, dragon)).
 leDijo(nico, maiu, starWars, relacion(parentesco, vader, luke)).
@@ -94,7 +94,7 @@ esFuerte(relacion(amorosa,_,_)).
 esFuerteOPopular(Serie):-
   esPopular(Serie).
 
-%para
+%para una serie especifica, se cumple que para toda temporada de esa serie, paso algo fuerte en cada una de ellas.
 esFuerteOPopular(Serie):-
   temporada(Serie,_,_),
   forall(temporada(Serie,Temporada,_),(paso(Serie,Temporada,_,Algo),esFuerte(Algo))).
