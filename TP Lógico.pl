@@ -117,3 +117,8 @@ test(es_Spoiler_relacion_de_parentesco_entre_anakin_y_el_rey_en_starWars):- esSp
 test(no_es_Spoiler_muerte_de_pedro_en_starWars, fail):- esSpoiler(starWars, muerte(pedro)).
 test(no_es_Spoiler_relacion_de_padre_entre_anakin_y_lavezzi_en_starWars, fail):- esSpoiler(starWars, relacion(parentesco, anakin, lavezzi)).
 end_tests(esSpoiler).
+
+begin_tests(leSpoileo).
+test(gaston_le_spoileo_a_maiu_sobre_got):- leSpoileo(gaston, maiu, got).
+test(nico_le_spoileo_a_maiu_sobre_starWars):- leSpoileo(nico, maiu, starWars).
+end_tests(leSpoileo).
