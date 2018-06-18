@@ -110,3 +110,12 @@ vieneZafando(Persona, Serie):-
   persona(Persona),
   planeaVer(Persona, Serie),
   not(leSpoileo(_,Persona,Serie)).
+
+begin_tests(esSpoiler).
+
+test(es_Spoiler_muerte_del_emperor_en_starWars):- esSpoiler(starWars, muerte(emperor)).
+test(no_es_Spoiler_muerte_de_pedro_en_starWars, fail):- esSpoiler(starWars, muerte(pedro)).
+test(es_Spoiler_relacion_de_parentesco_entre_anakin_y_el_rey_en_starWars):- esSpoiler(starWars, relacion(parentesco, anakin, rey)).
+test(no_es_Spoiler_relacion_de_padre_entre_anakin_y_lavezzi_en_starWars, fail):- esSpoiler(starWars, relacion(parentesco, anakin, lavezzi)).
+
+end_tests(esSpoiler).
