@@ -122,3 +122,7 @@ begin_tests(leSpoileo).
 test(gaston_le_spoileo_a_maiu_sobre_got):- leSpoileo(gaston, maiu, got).
 test(nico_le_spoileo_a_maiu_sobre_starWars):- leSpoileo(nico, maiu, starWars).
 end_tests(leSpoileo).
+
+begin_tests(televidenteResponsable).
+test(juan_aye_y_maiu_son_televidentes_responsables, set(X == [juan, aye, maiu])):- televidenteResponsable(X).
+end_tests(televidenteResponsable).
