@@ -111,18 +111,18 @@ vieneZafando(Persona, Serie):-
   planeaVer(Persona, Serie),
   not(leSpoileo(_,Persona,Serie)).
 
-begin_tests(esSpoiler).
-test(es_Spoiler_muerte_del_emperor_en_starWars):- esSpoiler(starWars, muerte(emperor)).
-test(es_Spoiler_relacion_de_parentesco_entre_anakin_y_el_rey_en_starWars):- esSpoiler(starWars, relacion(parentesco, anakin, rey)).
+:- begin_tests(esSpoiler).
+test(es_Spoiler_muerte_del_emperor_en_starWars,nondet):- esSpoiler(starWars, muerte(emperor)).
+test(es_Spoiler_relacion_de_parentesco_entre_anakin_y_el_rey_en_starWars,nondet):- esSpoiler(starWars, relacion(parentesco, anakin, rey)).
 test(no_es_Spoiler_muerte_de_pedro_en_starWars, fail):- esSpoiler(starWars, muerte(pedro)).
 test(no_es_Spoiler_relacion_de_padre_entre_anakin_y_lavezzi_en_starWars, fail):- esSpoiler(starWars, relacion(parentesco, anakin, lavezzi)).
-end_tests(esSpoiler).
+:- end_tests(esSpoiler).
 
-begin_tests(leSpoileo).
+:- begin_tests(leSpoileo).
 test(gaston_le_spoileo_a_maiu_sobre_got):- leSpoileo(gaston, maiu, got).
-test(nico_le_spoileo_a_maiu_sobre_starWars):- leSpoileo(nico, maiu, starWars).
-end_tests(leSpoileo).
+test(nico_le_spoileo_a_maiu_sobre_starWars,nondet):- leSpoileo(nico, maiu, starWars).
+:- end_tests(leSpoileo).
 
-begin_tests(televidenteResponsable).
+:- begin_tests(televidenteResponsable).
 test(juan_aye_y_maiu_son_televidentes_responsables, set(X == [juan, aye, maiu])):- televidenteResponsable(X).
-end_tests(televidenteResponsable).
+:- end_tests(televidenteResponsable).
