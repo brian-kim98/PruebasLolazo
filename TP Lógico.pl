@@ -41,7 +41,6 @@ temporada(got, 3, 12).
 temporada(got, 2, 10).
 temporada(himym, 1, 23).
 temporada(drHouse, 8, 16).
-%medio raro, revisar bien esto de arriba
 
 paso(futurama, 2, 3, muerte(seymourDiera)).
 paso(starWars, 10, 9, muerte(emperor)).
@@ -64,7 +63,7 @@ esSpoiler(Serie, QuePaso):-
   paso(Serie, _, _, QuePaso).
 
 
-%Se pueden hacer tanto consultas individuales como existenciales, ya que (Ver conceptos?)
+%Se pueden hacer tanto consultas individuales como existenciales?
 
 leSpoileo(Persona1, Persona2, Serie):-
   persona(Persona1),
@@ -111,6 +110,3 @@ vieneZafando(Persona, Serie):-
   persona(Persona),
   planeaVer(Persona, Serie),
   not(leSpoileo(_,Persona,Serie)).
-
-%maiu zafa con onePiece ? (Preguntar)
-%FALTA VER QUE ONDA CON LO DE "TODAS LAS TEMPORADAS"
