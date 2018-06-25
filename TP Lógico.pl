@@ -44,26 +44,18 @@ leDijo(aye, maiu, got, relacion(amistad, tyrion, john)).
 leDijo(aye, gaston, got, relacion(amistad, tyrion, dragon)).
 
 esSpoiler(Serie, QuePaso):-
-  serie(Serie),
   paso(Serie, _, _, QuePaso).
 
+miraOPlaneaVer(Persona, Serie):-
+  planeaVer(Persona, Serie).
 
-%Se pueden hacer tanto consultas individuales como existenciales?
+miraOPlaneaVer(Persona, Serie):-
+  mira(Persona, Serie).
 
 leSpoileo(Persona1, Persona2, Serie):-
-  persona(Persona1),
-  persona(Persona2),
-  planeaVer(Persona2, Serie),
+  miraOPlaneaVer(Persona2, Serie),
   leDijo(Persona1, Persona2, Serie, QuePaso),
-  paso(Serie, _, _, QuePaso).
-
-leSpoileo(Persona1, Persona2, Serie):-
-  persona(Persona1),
-  persona(Persona2),
-  mira(Persona2, Serie),
-  leDijo(Persona1, Persona2, Serie, QuePaso),
-  paso(Serie, _, _, QuePaso).
-
+  esSpoiler(Serie, QuePaso).
 
 televidenteResponsable(Persona):-
   persona(Persona),
@@ -83,17 +75,9 @@ esFuerteOPopular(Serie):-
   temporada(Serie,_,_),
   forall(temporada(Serie,Temporada,_),(paso(Serie,Temporada,_,Algo),esFuerte(Algo))).
 
-
 vieneZafando(Persona, Serie):-
   esFuerteOPopular(Serie),
-  persona(Persona),
-  mira(Persona, Serie),
-  not(leSpoileo(_,Persona,Serie)).
-
-vieneZafando(Persona, Serie):-
-  esFuerteOPopular(Serie),
-  persona(Persona),
-  planeaVer(Persona, Serie),
+  miraOPlaneaVer(Persona, Serie),
   not(leSpoileo(_,Persona,Serie)).
 
 :- begin_tests(esSpoiler).
