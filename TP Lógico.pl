@@ -1,18 +1,3 @@
-serie(himym).
-serie(futurama).
-serie(got).
-serie(starWars).
-serie(onePiece).
-serie(hoc).
-serie(madMen).
-serie(drHouse).
-
-persona(juan).
-persona(nico).
-persona(maiu).
-persona(gaston).
-persona(aye).
-
 mira(juan, himym).
 mira(juan, futurama).
 mira(juan, got).
