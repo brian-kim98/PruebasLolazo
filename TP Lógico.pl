@@ -79,8 +79,14 @@ televidenteResponsable(Persona):-
 
 %HASTA ACA CREO QUE ESTA PERFECT :D
 
+%aux para el PUNTO2 de la entrega 2
+pasoAFinalDeTemporada(Giro):-
+  paso(Serie,Temporada,Capitulo,plotTwist(Giro)),
+  temporada(Serie,Temporada,Capitulo).
+
 %Agrego para el Punto2 de la entrega 2
 esFuerte(plotTwist(Giro)):-
+  pasoAFinalDeTemporada(Giro),
   not(esCliche(Giro)).
 
 esFuerte(relacion(parentesco,_,_)).
@@ -146,3 +152,8 @@ esCliche(Giro):-
   paso(Serie1,_,_,plotTwist(Giro)),
   paso(Serie2,_,_,plotTwist(Giro)),
   Serie2 \= Serie1.
+
+%Punto3
+
+popular(Serie):-
+  
