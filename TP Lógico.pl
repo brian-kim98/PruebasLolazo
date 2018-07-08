@@ -80,8 +80,8 @@ televidenteResponsable(Persona):-
 %HASTA ACA CREO QUE ESTA PERFECT :D
 
 %Agrego para el Punto2 de la entrega 2
-esFuerte(plotTwist(Giros)):-
-  not(cliché(Giros)).
+esFuerte(plotTwist(Giro)):-
+  not(esCliche(Giro)).
 
 esFuerte(relacion(parentesco,_,_)).
 esFuerte(muerte(_)).
@@ -142,8 +142,7 @@ sucesoFuerte(Serie,Suceso):-
   paso(Serie,_,_,Suceso),
   esFuerte(Suceso).
 
-
-cliché([Giro|Giros]):-
-
-
-  Giro.
+esCliche(Giro):-
+  paso(Serie1,_,_,plotTwist(Giro)),
+  paso(Serie2,_,_,plotTwist(Giro)),
+  Serie2 \= Serie1.
