@@ -2,7 +2,7 @@ mira(juan, himym).
 mira(juan, futurama).
 mira(juan, got).
 %Agrego esto para la 2da entrega
-mira(pedro, got)
+mira(pedro, got).
 %------
 mira(nico, starWars).
 mira(nico, got).
