@@ -1,7 +1,9 @@
 mira(juan, himym).
 mira(juan, futurama).
 mira(juan, got).
-
+%Agrego esto para la 2da entrega
+mira(pedro, got)
+%------
 mira(nico, starWars).
 mira(nico, got).
 
@@ -36,6 +38,11 @@ paso(himym, 4, 3, relacion(amorosa, swarley, robin)).
 paso(got, 4, 5, relacion(amistad, tyrion, dragon)).
 
 
+%Agrego esto del punto 1 entrega 2
+leDijo(nico, juan, futurama, muerte(seymourDiera)).
+leDijo(pedro, aye, got, relacion(amistad, tyrion, dragon)).
+leDijo(pedro, nico, got, relacion(parentesco, tyrion, dragon)).
+%----
 leDijo(gaston, maiu, got, relacion(amistad, tyrion, dragon)).
 leDijo(nico, maiu, starWars, relacion(parentesco, vader, luke)).
 leDijo(nico, juan, got, muerte(tyrion)).
@@ -58,7 +65,9 @@ leSpoileo(Persona1, Persona2, Serie):-
   esSpoiler(Serie, QuePaso).
 
 televidenteResponsable(Persona):-
-  persona(Persona),
+  %esto de aca como lo hacemos sin el predicado persona?
+  miraOPlaneaVer(Persona,_),
+  %------------
   not(leSpoileo(Persona, _, _)).
 
 %HASTA ACA CREO QUE ESTA PERFECT :D
@@ -103,3 +112,5 @@ test(maiu_no_zafa_con_ninguna_serie, fail):- vieneZafando(maiu, _).
 test(juan_viene_zafando_con_himym_got_y_hoc, set(X = [himym, got, hoc])):- vieneZafando(juan, X).
 test(solo_nico_viene_safando_con_starWars, set(X = [nico])):- vieneZafando(X, starWars).
 :- end_tests(vieneZafando).
+
+%2da entrega
