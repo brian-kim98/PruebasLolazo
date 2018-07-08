@@ -29,6 +29,13 @@ temporada(got, 2, 10).
 temporada(himym, 1, 23).
 temporada(drHouse, 8, 16).
 
+%Agrego para el punto2 de la entrega 2
+paso(got, 3, 2, plotTwist([suenio, sinPiernas])).
+paso(got, 3, 12, plotTwist([fuego, boda])).
+paso(superCampeones, 9, 9, plotTwist([suenio, coma, sinPiernas])).
+paso(drHouse, 8, 7, plotTwist([coma, pastillas])).
+%-----
+
 paso(futurama, 2, 3, muerte(seymourDiera)).
 paso(starWars, 10, 9, muerte(emperor)).
 paso(starWars, 1, 2, relacion(parentesco, anakin, rey)).
@@ -71,9 +78,15 @@ televidenteResponsable(Persona):-
   not(leSpoileo(Persona, _, _)).
 
 %HASTA ACA CREO QUE ESTA PERFECT :D
+
+%Agrego para el Punto2 de la entrega 2
+esFuerte(plotTwist(Giros)):-
+  not(cliché(Giros)).
+
 esFuerte(relacion(parentesco,_,_)).
 esFuerte(muerte(_)).
 esFuerte(relacion(amorosa,_,_)).
+
 
 %predicado auxiliar
 esFuerteOPopular(Serie):-
@@ -124,3 +137,13 @@ malaPersona(Persona):-
   not(mira(Persona,Serie)).
 
 %Punto2
+
+sucesoFuerte(Serie,Suceso):-
+  paso(Serie,_,_,Suceso),
+  esFuerte(Suceso).
+
+
+cliché([Giro|Giros]):-
+
+
+  Giro.
