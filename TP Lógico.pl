@@ -1,8 +1,9 @@
 mira(juan, himym).
 mira(juan, futurama).
 mira(juan, got).
+%Agrego esto para la 2da entrega
 mira(pedro, got).
-
+%------
 mira(nico, starWars).
 mira(nico, got).
 
@@ -23,10 +24,12 @@ temporada(got, 2, 10).
 temporada(himym, 1, 23).
 temporada(drHouse, 8, 16).
 
+%Agrego para el punto2 de la entrega 2
 paso(got, 3, 2, plotTwist([suenio, sinPiernas])).
 paso(got, 3, 12, plotTwist([fuego, boda])).
 paso(superCampeones, 9, 9, plotTwist([suenio, coma, sinPiernas])).
 paso(drHouse, 8, 7, plotTwist([coma, pastillas])).
+%-----
 
 paso(futurama, 2, 3, muerte(seymourDiera)).
 paso(starWars, 10, 9, muerte(emperor)).
@@ -66,9 +69,12 @@ leSpoileo(Persona1, Persona2, Serie):-
   esSpoiler(Serie, QuePaso).
 
 televidenteResponsable(Persona):-
+  %esto de aca como lo hacemos sin el predicado persona?
   miraOPlaneaVer(Persona,_),
+  %------------
   not(leSpoileo(Persona, _, _)).
 
+%HASTA ACA CREO QUE ESTA PERFECT :D
 
 %aux para el PUNTO2 de la entrega 2
 pasoAFinalDeTemporada(Giro):-
