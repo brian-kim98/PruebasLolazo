@@ -14,11 +14,6 @@ mira(maiu, got).
 mira(gaston, hoc).
 %no ponemos a Alf por el Principio del Universo Cerrado, ya que no mira ninguna serie, pero lo podemos definir como persona
 
-esPopular(got).
-esPopular(hoc).
-esPopular(starWars).
-
-
 planeaVer(juan, hoc).
 planeaVer(aye, got).
 planeaVer(gaston, himym).
@@ -154,6 +149,26 @@ esCliche(Giro):-
   Serie2 \= Serie1.
 
 %Punto3
+esPopular(got).
+esPopular(hoc).
+esPopular(starWars).
 
-popular(Serie):-
-  
+esPopular(Serie):-
+  puntajePopularidad(Serie, Puntaje1),
+  puntajePopularidad(starWars, Puntaje2),
+  Puntaje1 >= Puntaje2.
+
+puntajePopularidad(Serie, Puntaje):-
+  cantidadDeEspectadores(Serie, Cantidad1),
+  cantidadDeHabladores(Serie, Cantidad2),
+  Puntaje is Cantidad1 * Cantidad2.
+
+cantidadDeEspectadores(Serie, Cantidad):-
+  mira(_, Serie),
+  findall(Espectador, mira(Espectador, Serie), Espectadores),
+  length(Espectadores, Cantidad).
+
+cantidadDeHabladores(Serie, Cantidad):-
+  mira(_, Serie),
+  findall(Hablador, leDijo(Hablador,_,Serie,_), Habladores),
+  length(Habladores, Cantidad).
