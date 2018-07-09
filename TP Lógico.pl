@@ -1,9 +1,8 @@
 mira(juan, himym).
 mira(juan, futurama).
 mira(juan, got).
-%Agrego esto para la 2da entrega
 mira(pedro, got).
-%------
+
 mira(nico, starWars).
 mira(nico, got).
 
@@ -24,12 +23,10 @@ temporada(got, 2, 10).
 temporada(himym, 1, 23).
 temporada(drHouse, 8, 16).
 
-%Agrego para el punto2 de la entrega 2
 paso(got, 3, 2, plotTwist([suenio, sinPiernas])).
 paso(got, 3, 12, plotTwist([fuego, boda])).
 paso(superCampeones, 9, 9, plotTwist([suenio, coma, sinPiernas])).
 paso(drHouse, 8, 7, plotTwist([coma, pastillas])).
-%-----
 
 paso(futurama, 2, 3, muerte(seymourDiera)).
 paso(starWars, 10, 9, muerte(emperor)).
@@ -39,18 +36,20 @@ paso(himym, 1, 1, relacion(amorosa, ted, robin)).
 paso(himym, 4, 3, relacion(amorosa, swarley, robin)).
 paso(got, 4, 5, relacion(amistad, tyrion, dragon)).
 
-
-%Agrego esto del punto 1 entrega 2
-leDijo(nico, juan, futurama, muerte(seymourDiera)).
 leDijo(pedro, aye, got, relacion(amistad, tyrion, dragon)).
 leDijo(pedro, nico, got, relacion(parentesco, tyrion, dragon)).
-%----
 leDijo(gaston, maiu, got, relacion(amistad, tyrion, dragon)).
 leDijo(nico, maiu, starWars, relacion(parentesco, vader, luke)).
 leDijo(nico, juan, got, muerte(tyrion)).
+leDijo(nico, juan, futurama, muerte(seymourDiera)).
 leDijo(aye, juan, got, relacion(amistad, tyrion, john)).
 leDijo(aye, maiu, got, relacion(amistad, tyrion, john)).
 leDijo(aye, gaston, got, relacion(amistad, tyrion, dragon)).
+
+amigo(nico, maiu).
+amigo(maiu, gaston).
+amigo(maiu, juan).
+amigo(juan, aye).
 
 esSpoiler(Serie, QuePaso):-
   paso(Serie, _, _, QuePaso).
@@ -67,12 +66,9 @@ leSpoileo(Persona1, Persona2, Serie):-
   esSpoiler(Serie, QuePaso).
 
 televidenteResponsable(Persona):-
-  %esto de aca como lo hacemos sin el predicado persona?
   miraOPlaneaVer(Persona,_),
-  %------------
   not(leSpoileo(Persona, _, _)).
 
-%HASTA ACA CREO QUE ESTA PERFECT :D
 
 %aux para el PUNTO2 de la entrega 2
 pasoAFinalDeTemporada(Giro):-
@@ -87,7 +83,6 @@ esFuerte(plotTwist(Giro)):-
 esFuerte(relacion(parentesco,_,_)).
 esFuerte(muerte(_)).
 esFuerte(relacion(amorosa,_,_)).
-
 
 %predicado auxiliar
 esFuerteOPopular(Serie):-
@@ -128,7 +123,6 @@ test(solo_nico_viene_safando_con_starWars, set(X = [nico])):- vieneZafando(X, st
 :- end_tests(vieneZafando).
 
 %2da entrega
-
 %punto1
 malaPersona(Persona):-
   forall(leDijo(Persona,Persona2,_,_),leSpoileo(Persona,Persona2,_)).
@@ -138,7 +132,6 @@ malaPersona(Persona):-
   not(mira(Persona,Serie)).
 
 %Punto2
-
 sucesoFuerte(Serie,Suceso):-
   paso(Serie,_,_,Suceso),
   esFuerte(Suceso).
@@ -172,3 +165,11 @@ cantidadDeHabladores(Serie, Cantidad):-
   mira(_, Serie),
   findall(Hablador, leDijo(Hablador,_,Serie,_), Habladores),
   length(Habladores, Cantidad).
+
+%punto 4
+fullSpoil(Spoileador, Spoileado):-
+  leSpoileo(Spoileador, Spoileado, _).
+
+fullSpoil(Spoileador, Spoileado):-
+  amigo(AmigoDelSpoileado, Spoileado),
+  fullSpoil(Spoileador, AmigoDelSpoileado).
