@@ -86,10 +86,11 @@ esFuerte(plotTwist(Giro)):-
   pasoAFinalDeTemporada(Giro),
   not(esCliche(Giro)).
 
-esFuerte(relacion(parentesco,_,_)).
-esFuerte(muerte(_)).
-esFuerte(relacion(amorosa,_,_)).
-
+esFuerte(Algo):-
+  paso(_,_,_,Algo),
+  Algo \= relacion(amistad,_,_),
+  Algo \= plotTwist(_).
+  
 %predicado auxiliar
 esFuerteOPopular(Serie):-
   esPopular(Serie).
@@ -178,4 +179,25 @@ fullSpoil(Spoileador, Spoileado):-
 
 fullSpoil(Spoileador, Spoileado):-
   amigo(AmigoDelSpoileado, Spoileado),
+  Spoileado \= Spoileador,
   fullSpoil(Spoileador, AmigoDelSpoileado).
+
+  %punto 5
+  :-begin_tests(malaPersona).
+  test(gaston_y_nico_son_malas_personas, set(Y=[nico, gaston])):- malaPersona(Y).
+  test(pedro_no_es_mala_persona,fail):- malaPersona(pedro).
+  :- end_tests(malaPersona).
+
+  :-begin_tests(esFuerte).
+  test(la_muerte_de_seymourdiera_es_algo_fuerte_en_futurama , nondet):- esFuerte(muerte(seymourDiera)).
+  test(el_plottwist_con_fuego_y_boda_es_algo_fuerte_en_got , nondet):- esFuerte(plotTwist([fuego, boda])).
+  test(el_plotTwist_con_la_palabra_suenio_no_es_fuerte , fail):- esFuerte(plotTwist([suenio, sinPiernas])).
+  :- end_tests(esFuerte).
+
+  :-begin_tests(fullSpoil).
+  test(nico_hizo_fullSpoil_a_juan_aye_y_maiu , set(X = [aye, juan, maiu, gaston])):- fullSpoil(nico,X).
+  test(gaston_hizo_fullSpoil_a_maiu_juan_y_aye, set(Y = [maiu, juan, aye])):- fullSpoil(gaston,Y).
+  test(maiu_no_fullSpoil_a_nadie , set(Z = [])):- fullSpoil(maiu,Z).
+  :-end_tests(fullSpoil).
+
+  
