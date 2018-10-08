@@ -143,4 +143,10 @@ class LibroDeHechizos{
 
 	method hechizosSin(unHechizo) = self.hechizos().filter({hechizo => hechizo != unHechizo})
 
+	method precio() = self.precioTotalPorHechizos() + self.precioTotalDelHechizo()
+
+	method precioTotalDelHechizo() = self.hechizosPoderosos().sum({hechizo => hechizo.poder()})
+
+	method precioTotalPorHechizos() = self.hechizosSin(self).size() * self.precioPorCadaHechizo()
+	
 }

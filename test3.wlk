@@ -99,4 +99,15 @@ describe "(Parte 3)"{
 		assert.equals(rolando.valorDeLucha(),37)
 
 	}
+
+  test "Ejemplo de Precio Libro Hechizo (NO OBLIGATORIO)"{
+
+		const hechizo30 = new Logos(nombre = "h",multiplicador = 30)
+		const hechizo34 = new Logos(nombre = "k",multiplicador = 34)
+
+		const librito = new LibroDeHechizos()
+
+		librito.hechizos([hechizo30,hechizo34])
+
+		assert.equals(librito.precio(),84)
 }
