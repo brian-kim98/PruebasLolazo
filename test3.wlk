@@ -86,4 +86,17 @@ describe "(Parte 3)"{
 
 		assert.equals(rolando.nivelDeHechiceria(),56)
 	}
+  test "Le agrego a rolando una ArmaduraExtra, con valor base 5 y un refuerzo cota de Malla con valor de lucha = 6, entonces Rolando tiene 37 de habilidad de Lucha"{
+
+		const armaduraExtra = new Armadura(
+			valorBase = 5,
+			refuerzo = new CotaDeMalla(cantidadUnidadDeLucha = 6
+			)
+		)
+
+		rolando.agregaArtefacto(armaduraExtra)
+
+		assert.equals(rolando.valorDeLucha(),37)
+
+	}
 }
