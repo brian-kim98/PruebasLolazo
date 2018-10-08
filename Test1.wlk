@@ -2,7 +2,7 @@ import rolandParte2.*
 
 describe "(PARTE 1)" {
 
-	const espectroMalefico = new Logos(nombre = "Espectro Malefico")
+	const espectroMalefico = new Logos(nombre = "Espectro Malefico",multiplicador = 1)
 	const rolando = new Personaje(hechizoPreferido = espectroMalefico)
 
 

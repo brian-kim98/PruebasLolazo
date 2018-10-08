@@ -3,16 +3,14 @@ import rolandParte2.*
 describe "(PARTE 2)"{
 
 	const espadaDelDestino = new Arma()
-	const mascaraOscura = new MascaraOscura(indiceDeOscuridad = 1)
+	const mascaraOscura = new MascaraOscura(indiceOscuridad = 1)
+	const collarDivino = new CollarDivino(perlas = 5)
 
 	const rolando = new Personaje()
 
 	fixture {
 
-		collarDivino.perlas(5)
-
 		rolando.agregaLosArtefactos([espadaDelDestino,collarDivino,mascaraOscura])
-
 
 	}
 
@@ -62,7 +60,7 @@ describe "(PARTE 2)"{
 
 	test "Si la  Mascara (para nada) Oscura de Rolando tiene indiceDeOscuridad de 0, su valor de lucha  es 4"{
 
-		const mascaraNoOscura = new MascaraOscura(indiceDeOscuridad = 0)
+		const mascaraNoOscura = new MascaraOscura(indiceOscuridad = 0)
 
 		assert.equals(mascaraNoOscura.unidadesDeLucha(rolando),4)
 
@@ -70,9 +68,9 @@ describe "(PARTE 2)"{
 
 	test "Si Tengo una Mascara con indice = 0, y un valor minimo de 2, su valor de lucha de la mascara de rolando es 2 "{
 
-		const mascaraNoOscura = new MascaraOscura(indiceDeOscuridad = 0)
+		const mascaraNoOscura = new MascaraOscura(indiceOscuridad = 0)
 
-		mascaraNoOscura.minimoDePoder(2)
+		mascaraNoOscura.minimo(2)
 
 		assert.equals(mascaraNoOscura.unidadesDeLucha(rolando),2)
 	}

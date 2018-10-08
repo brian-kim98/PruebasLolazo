@@ -1,19 +1,20 @@
-import rolandParte2.*
+import rolandParte3.*
 
 describe "(Parte 3)"{
 
 	const espadaDelDestino = new Arma()
-	const mascaraOscura = new MascaraOscura(indiceDeOscuridad = 1)
-	const espectroMalefico = new Logos(nombre = "Espectro Malefico")
+	const mascaraOscura = new MascaraOscura(indiceOscuridad = 1)
+	const espectroMalefico = new Logos(nombre = "Espectro Malefico",multiplicador = 1)
+	const collarDivino = new CollarDivino(perlas = 5)
+
 	const rolando = new Personaje(hechizoPreferido = espectroMalefico)
+
 
 	const armaduraSinRefuerzo = new Armadura(refuerzo = ningunRefuerzo,valorBase = 2)
 
 	fixture{
 
-		collarDivino.perlas(5)
-
-		rolando.artefactos([espadaDelDestino,collarDivino,mascaraOscura,armaduraSinRefuerzo,espejo])
+		rolando.agregaLosArtefactos([espadaDelDestino,collarDivino,mascaraOscura,armaduraSinRefuerzo,espejoFantastico])
 	}
 
 	test "Rolando esta CARGADO si usa sus artefactos por defecto"{
@@ -32,9 +33,8 @@ describe "(Parte 3)"{
 
 	test"La Habilidad de lucha de rolando es de 20"{
 
-
-
 		assert.equals(rolando.valorDeLucha(),20)
+
 	}
 
 	test "Si la armadura de Rolando tiene Bendicion, la habilidad para la lucha de la armadura es de 56"{
@@ -45,6 +45,8 @@ describe "(Parte 3)"{
 	}
 
 	test"Si la armadura de Rolando tiene Cota De Mallas, la habilidad para la lucha de la armadura es de 3"{
+
+		const cotaDeMallas = new CotaDeMalla()
 
 		armaduraSinRefuerzo.refuerzo(cotaDeMallas)
 
@@ -70,7 +72,7 @@ describe "(Parte 3)"{
 	test"Rolando deja de tener artefactos y se equipa un espejo, su habilidad de lucha es 1"{
 
 		rolando.removeTodosLosArtefactos()
-		rolando.agregaArtefacto(espejo)
+		rolando.agregaArtefacto(espejoFantastico)
 
 		assert.equals(rolando.valorDeLucha(),1)
 	}
