@@ -1,0 +1,54 @@
+import rolandParte2.*
+
+describe "(PARTE 1)" {
+
+	const espectroMalefico = new Logos(nombre = "Espectro Malefico")
+	const rolando = new Personaje(hechizoPreferido = espectroMalefico)
+
+
+	test "Si el hechizo preferido de Rolando es Espectro Malefico, su nivel de Hechizeria es 56" {
+
+		assert.equals(rolando.nivelDeHechiceria(),56)
+
+	}
+
+	test "Si cambio el nombre de espectro malefico, rolando obtiene 125 de nivel de hechizeria" {
+
+		espectroMalefico.nombre("Espectro superrecontraMalefico muajajaja")
+
+		assert.equals(rolando.nivelDeHechiceria(),125)
+
+	}
+
+	test "Si el hechizo preferido de Rolando es Hechizo Basico, rolando Obtiene 35 de nivel de hechizeria "{
+
+		rolando.hechizoPreferido(hechizoBasico)
+
+		assert.equals(rolando.nivelDeHechiceria(),35)
+	}
+
+	test "Si ocurre un eclipse, el nivelDeHechizeria de Rolando es 61"{
+
+		mundo.eclipse()
+
+		assert.equals(rolando.nivelDeHechiceria(),61)
+
+	}
+
+	test "el espectro Malefico ES poderoso"{
+
+		assert.that(espectroMalefico.sosPoderoso())
+	}
+
+	test "el Espectro Malefico ahora se llama PEPE y DEJA DE SER poderoso"{
+		espectroMalefico.nombre("pepe")
+
+		assert.notThat(espectroMalefico.sosPoderoso())
+
+	}
+
+	test "el Hechizo Basico NO es poderoso"{
+
+		assert.notThat(hechizoBasico.sosPoderoso())
+	}
+}
