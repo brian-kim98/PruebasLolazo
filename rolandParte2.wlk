@@ -56,6 +56,7 @@ class Logos{
 	var property multiplicador = null
 	method poder() = self.nombre().size() * self.multiplicador()
 	method sosPoderoso() = self.poder() > 15
+	method unidadesDeLucha(portador) = self.poder()
 	method precio() = self.poder()
 	method precioRefuerzo(armadura) = armadura.valorBase() + self.precio()
 	
@@ -122,7 +123,7 @@ object espejoFantastico{
 		}
 	}
 	
-	method precioRefuerzo(armadura) = 90
+	method precio() = 90
 }
 
 class LibroDeHechizos{
@@ -140,4 +141,6 @@ class LibroDeHechizos{
 	method unidadesDeLucha(portador) = self.hechizosPoderosos().sum({hechizo => hechizo.unidadesDeLucha(portador)})
 	
 	method hechizosSin(unHechizo) = self.hechizos().filter({hechizo => hechizo != unHechizo})
+	
+	method precio() = self.hechizosSin(self).size() * 10 + self.unidadesDeLucha()
 }
