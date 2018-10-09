@@ -129,6 +129,7 @@ object espejoFantastico{
 
 class LibroDeHechizos{
 	const property hechizos = []
+	var property precioPorCadaHechizo = 10
 
 	method poder() = self.hechizosPoderosos().sum({hechizo => hechizo.poder()})
 
@@ -148,5 +149,5 @@ class LibroDeHechizos{
 	method precioTotalDelHechizo() = self.hechizosPoderosos().sum({hechizo => hechizo.poder()})
 
 	method precioTotalPorHechizos() = self.hechizosSin(self).size() * self.precioPorCadaHechizo()
-	
+
 }
