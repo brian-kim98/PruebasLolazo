@@ -1,11 +1,13 @@
 import hechizos.*
 import Artefactos.*
+import Armadura.*
 
 class Personaje{
 	const property artefactos = []
 	var property hechizoPreferido
 	var property basePelea = 1
 	var property monedas = 100
+	const property pesoLimite 
 	
 	method basePoder () = 3
 	
@@ -80,6 +82,8 @@ class Personaje{
 			return self.monedas()
 		}
 	}
+	
+	
 }
 	
 	

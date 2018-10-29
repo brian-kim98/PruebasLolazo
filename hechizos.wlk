@@ -1,15 +1,29 @@
 class Hechizo{
 	
 	method poder()
+	
 	method unidadesDeLucha() = self.poder()
+	
 	method precioRefuerzo(armadura) = armadura.valorbase() + self.precio()
+	
 	method precio()
 	
+	method sosPoderoso()
+	
+	method pesoQueAgrega() {
+	 if(self.poder().even()){
+	 	return 2
+	 }
+	 else {
+	 	return 1 
+	 }
+	 }
+
 }
 
 object hechizoBasico inherits Hechizo{
 	override method poder() = 10
-	method sosPoderoso() = false
+	override method sosPoderoso() = false
 	override method precio() = 10
 }
 
@@ -17,7 +31,7 @@ class Logos inherits Hechizo{
 	var property nombre
 	var property multiplicador
 	override method poder() = self.nombre().size() * self.multiplicador()
-	method sosPoderoso() = self.poder() > 15
+	override method sosPoderoso() = self.poder() > 15
 	override method precio() = self.poder()
 	
 }
