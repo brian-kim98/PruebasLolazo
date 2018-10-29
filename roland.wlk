@@ -42,54 +42,112 @@ class Personaje{
 	}
 	
 	method compraArtefacto(artefactoAComprar) {
-		if(artefactoAComprar.precio() <= self.monedas() ){
-			self.agregaArtefacto(artefactoAComprar)
-			self.monedas(self.monedas() - artefactoAComprar.precio())
-			//return self.monedas()
+		
+		if(self.podesComprarArtefacto(artefactoAComprar).negate()){
+			
+			throw new NoTenesMonedas("Te faltan un par de monedas en la billetera para comprar el artefacto")
 		}
-		/*else{
-			return self.monedas()
-		}*/
+		
+			self.agregaArtefacto(artefactoAComprar)
+
+			self.monedas(self.monedas() - artefactoAComprar.precio())
 	}
+		
+	
+	
+	method podesComprarArtefacto(artefactoAComprar) =
+		artefactoAComprar.precio() <= self.monedas()
+	
 
 	method compraHechizo(nuevoHechizo){
 		var descuento = self.hechizoPreferido().precio() / 2
+
 		self.hechizoPreferido(nuevoHechizo)
+
 		if (descuento + self.monedas() >= nuevoHechizo.precio() ){
 			self.hechizoPreferido(nuevoHechizo)
-			self.monedas(self.monedas() - (nuevoHechizo.precio() - descuento).max(0))
-			//return self.monedas()
-		} 
-		/*else{
+
+			var acumulador = self.monedas() - (nuevoHechizo.precio() - descuento).max(0)
+
+			self.monedas(acumulador)
+
 			return self.monedas()
-		}*/
+
+		} else {
+			return self.monedas()
+		}
 	}
 }
 
-
-object hechizoBasico{
-	method poder() = 10
-	method esPoderoso() = false
-	method unidadesDeLucha(portador) = self.poder()
-	method precio() = 10
-	method precioRefuerzo(armadura) = armadura.valorBase() + self.precio()
-}
-
-class Logos{
-	var property nombre = null
-	var property multiplicador = null
-	method poder() = self.nombre().size() * self.multiplicador()
-	method esPoderoso() = self.poder() > 15
-	method unidadesDeLucha(portador) = self.poder()
-	method precio() = self.poder()
-	method precioRefuerzo(armadura) = armadura.valorBase() + self.precio()
-	
-}
 
 object mundo{
 	var property fuerzaOscura = 5
 	method eclipse(){fuerzaOscura *= 2}
 }
+
+
+class NoTenesMonedas inherits Exception{}
+
+
+class Hechizo{
+	
+	method poder()
+	method unidadesDeLucha() = self.poder()
+	method precioRefuerzo(armadura) = armadura.valorbase() + self.precio()
+	method precio()
+	
+}
+
+class HechizoComercial inherits Logos{
+	var property porcentaje = 0.2
+	override method poder() = (self.nombre().size() * self.porcentaje()) * self.multiplicador()
+	 
+}
+
+object hechizoBasico inherits Hechizo{
+	override method poder() = 10
+	method sosPoderoso() = false
+	override method precio() = 10
+}
+
+class Logos inherits Hechizo{
+	var property nombre
+	var property multiplicador
+	override method poder() = self.nombre().size() * self.multiplicador()
+	method sosPoderoso() = self.poder() > 15
+	override method precio() = self.poder()
+	
+}
+
+class LibroDeHechizos{
+	const property hechizos = []
+	var property precioPorCadaHechizo = 10
+	
+	method poder() = self.hechizosPoderosos().sum({hechizo => hechizo.poder()})
+	
+	method hechizos(nuevosHechizos){
+		self.hechizos().clear()
+		self.hechizos().addAll(nuevosHechizos)
+	}
+	
+	method agregarHechizo(unHechizo){
+		self.hechizos().add(unHechizo)
+	}
+	
+	method hechizosPoderosos() = self.hechizosSin(self).filter({hechizo => hechizo.sosPoderoso()})
+	
+	method unidadesDeLucha(portador) = self.hechizosPoderosos().sum({hechizo => hechizo.unidadesDeLucha(portador)})
+	
+	method hechizosSin(unHechizo) = self.hechizos().filter({hechizo => hechizo != unHechizo})
+	
+	method precio() = self.precioTotalPorHechizos() + self.precioTotalDelHechizo()
+	
+	method precioTotalDelHechizo() = self.hechizosPoderosos().sum({hechizo => hechizo.poder()})
+	
+	method precioTotalPorHechizos() = self.hechizosSin(self).size() * self.precioPorCadaHechizo()
+	
+}
+
 
 class Arma{
 	const property unidad = 3
@@ -103,46 +161,11 @@ class CollarDivino{
 	method precio() = self.perlas() * 2
 }
 
-class MascaraOscura{
-	var property indiceDeOscuridad = 0
-	var property minimo = 4
-	method indiceDeOscuridad(unIndice){
-		indiceDeOscuridad = unIndice.max(0).min(1)
-	}
-	method unidadesDeLucha(portador) = (self.minimo()).max(mundo.fuerzaOscura()/2 * self.indiceDeOscuridad())
-}
-
-class Armadura{
-	var property refuerzo = ningunRefuerzo
-	var property valorBase = 2
-	
-	method unidadesDeLucha(portador){
-			return self.valorBase() + self.unidadesDeLucha(portador)
-	}
-	
-	method precio() = self.refuerzo().precioRefuerzo()
-}
-
-object ningunRefuerzo{
-	method unidadesDeLucha(portador) = 0
-	method precioRefuerzo(armadura) = 2
-}
-class CotaDeMallas{
-	var property cantidadUnidadDeLucha = 1
-	method unidadesDeLucha(portador) = self.cantidadUnidadDeLucha()
-	method precioRefuerzo(armadura) = self.cantidadUnidadDeLucha()/2
-}
-
-object bendicion{
-	method unidadesDeLucha(portador) = portador.nivelDeHechiceria()
-	method precioRefuerzo(armadura) = armadura.valorBase()
-}
-
 object espejoFantastico{
 	method cantidadDeArtefactos(portador) = portador.artefactos().size()
 
 	method unidadesDeLucha(portador){
-		if(portador.cantidadDeArtefactoSin(self) >= 1){
+		if(portador.cantidadDeArtefactosSin(self) >= 1){
 			return portador.mejorArtefacto().unidadesDeLucha(portador)
 		}
 		else{
@@ -153,26 +176,34 @@ object espejoFantastico{
 	method precio() = 90
 }
 
-class LibroDeHechizos{
-	const property hechizos = []
-	
-	method poder() = self.hechizosPoderosos().sum({hechizo => hechizo.poder()})
-	
-	method hechizos(nuevosHechizos){
-		self.hechizos().clear()
-		self.hechizos().addAll(nuevosHechizos)
-	}
-	
-	method agregarHechizo(unHechizo){
-		self.hechizos().add(unHechizo)
-	}
+class MascaraOscura{
+	var property indiceOscuridad
+	var property minimo = 4
+	method unidadesDeLucha(portador) = (self.minimo()).max(mundo.fuerzaOscura()/2 * self.indiceOscuridad())
+}
 
+class Armadura{
+	var property refuerzo = ningunRefuerzo
+	var property valorBase = 2
 	
-	method hechizosPoderosos() = self.hechizosSin(self).filter({hechizo => hechizo.esPoderoso()})
+	method unidadesDeLucha(portador){
+			return self.valorBase() + self.refuerzo().unidadesDeLucha(portador)
+	}
 	
-	method unidadesDeLucha(portador) = self.hechizosPoderosos().sum({hechizo => hechizo.unidadesDeLucha(portador)})
-	
-	method hechizosSin(unHechizo) = self.hechizos().filter({hechizo => hechizo != unHechizo})
-	
-	method precio() = self.hechizosSin(self).size() * 10 + self.unidadesDeLucha()
+	method precio() = self.refuerzo().precioRefuerzo()
+}
+
+object ningunRefuerzo{
+	method unidadesDeLucha(portador) = 0
+	method precioRefuerzo(armadura) = 2
+}
+class CotaDeMalla{
+	var property cantidadUnidadDeLucha = 1
+	method unidadesDeLucha(portador) = self.cantidadUnidadDeLucha()
+	method precioRefuerzo(armadura) = self.cantidadUnidadDeLucha()/2
+}
+
+object bendicion{
+	method unidadesDeLucha(portador) = portador.nivelDeHechiceria()
+	method precioRefuerzo(armadura) = armadura.valorBase()
 }
