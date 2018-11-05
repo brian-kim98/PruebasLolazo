@@ -8,7 +8,7 @@ class Artefacto{
 	
 	method cuantoPesas() = self.peso() - self.factorDeCorreccion()
 	
-	method factorDeCorreccion() = (self.diasDesdeLaCompra()/1000).max(1)
+	method factorDeCorreccion() = (self.diasDesdeLaCompra()/1000).min(1)
 	
 }
 
