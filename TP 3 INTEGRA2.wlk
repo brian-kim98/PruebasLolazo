@@ -184,7 +184,7 @@ class Artefacto{
 	
 	method cuantoPesas() = self.peso() - self.factorDeCorreccion()
 	
-	method factorDeCorreccion() = (self.diasDesdeLaCompra()/1000).max(1)
+	method factorDeCorreccion() = (self.diasDesdeLaCompra()/1000).min(1)
 	
 }
 
@@ -198,7 +198,7 @@ class CollarDivino inherits Artefacto{
 	var property perlas = 1
 	method unidadesDeLucha(portador) = self.perlas()
 	method precio() = self.perlas() * 2
-	override method cuantoPesas() = self.peso() - self.factorDeCorreccion() + self.perlas()*0.5
+	override method cuantoPesas() = super() + self.perlas()*0.5
 	
 }
 
@@ -221,7 +221,7 @@ class MascaraOscura inherits Artefacto{
 	var property indiceOscuridad
 	var property minimo = 4
 	method unidadesDeLucha(portador) = (self.minimo()).max(mundo.fuerzaOscura()/2 * self.indiceOscuridad())
-	override method cuantoPesas() =  self.peso() - self.factorDeCorreccion() + self.pesoExtra()
+	override method cuantoPesas() = super() + self.pesoExtra()
 	
 	method pesoExtra() = 0.max(self.unidadesDeLucha(self) - 3 )
 	
