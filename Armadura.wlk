@@ -10,7 +10,7 @@ class Armadura inherits Artefacto{
 	
 	method precio() = self.refuerzo().precioRefuerzo()
 	
-	override method cuantoPesas() = self.peso() - self.factorDeCorreccion() + self.refuerzo().pesoQueAgrega()
+	override method cuantoPesas() = super() + self.refuerzo().pesoQueAgrega()
 }
 
 object ningunRefuerzo{
